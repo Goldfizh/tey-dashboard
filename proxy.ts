@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 const COOKIE_NAME = 'tey_auth';
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const isAuthenticated = request.cookies.get(COOKIE_NAME)?.value === '1';
   const { pathname } = request.nextUrl;
 
