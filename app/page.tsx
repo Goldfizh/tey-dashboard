@@ -254,10 +254,10 @@ export default function DashboardPage() {
           <button
             onClick={fetchData}
             disabled={loading}
-            className="text-xs font-semibold disabled:opacity-40 transition-colors"
-            style={{ color: '#8C9BAF' }}
-            onMouseEnter={(e) => (e.currentTarget.style.color = '#ffffff')}
-            onMouseLeave={(e) => (e.currentTarget.style.color = '#8C9BAF')}
+            className="text-xs font-semibold disabled:opacity-40 transition-all rounded-lg px-4 py-2"
+            style={{ background: 'var(--gf-purple-600)', color: '#ffffff' }}
+            onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--gf-purple-700)')}
+            onMouseLeave={(e) => (e.currentTarget.style.background = 'var(--gf-purple-600)')}
           >
             {loading ? 'Laden…' : '↺ Vernieuwen'}
           </button>
