@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState, useCallback } from 'react';
+import ReactMarkdown from 'react-markdown';
 import type { DashboardContext } from '@/app/api/chat/route';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -292,18 +293,17 @@ export default function ChatPanel({ context }: Props) {
                 <div key={m.id} style={{ display: 'flex', justifyContent: isUser ? 'flex-end' : 'flex-start' }}>
                   <div
                     style={{
-                      maxWidth: '85%',
+                      maxWidth: isUser ? '85%' : '100%',
                       fontSize: '12px',
                       lineHeight: 1.6,
                       padding: '10px 12px',
                       borderRadius: isUser ? '12px 12px 4px 12px' : '12px 12px 12px 4px',
                       background: isUser ? '#6331F4' : '#F0F4F8',
                       color: isUser ? '#ffffff' : '#12101F',
-                      whiteSpace: 'pre-wrap',
                       wordBreak: 'break-word',
                     }}
                   >
-                    {m.content || (
+                    {!m.content ? (
                       /* Streaming dots while empty */
                       <span style={{ display: 'flex', gap: '4px', alignItems: 'center', height: '16px' }}>
                         {[0, 1, 2].map((i) => (
@@ -313,6 +313,26 @@ export default function ChatPanel({ context }: Props) {
                           }} />
                         ))}
                       </span>
+                    ) : isUser ? (
+                      <span style={{ whiteSpace: 'pre-wrap' }}>{m.content}</span>
+                    ) : (
+                      <ReactMarkdown
+                        components={{
+                          h1: ({ children }) => <p style={{ fontWeight: 700, fontSize: '13px', marginBottom: '6px', marginTop: '10px', color: '#12101F' }}>{children}</p>,
+                          h2: ({ children }) => <p style={{ fontWeight: 700, fontSize: '12px', marginBottom: '4px', marginTop: '10px', color: '#12101F' }}>{children}</p>,
+                          h3: ({ children }) => <p style={{ fontWeight: 700, fontSize: '12px', marginBottom: '4px', marginTop: '8px', color: '#555E6C' }}>{children}</p>,
+                          p:  ({ children }) => <p style={{ marginBottom: '6px', marginTop: 0 }}>{children}</p>,
+                          ul: ({ children }) => <ul style={{ paddingLeft: '16px', marginBottom: '6px', marginTop: '2px' }}>{children}</ul>,
+                          ol: ({ children }) => <ol style={{ paddingLeft: '16px', marginBottom: '6px', marginTop: '2px' }}>{children}</ol>,
+                          li: ({ children }) => <li style={{ marginBottom: '3px' }}>{children}</li>,
+                          strong: ({ children }) => <strong style={{ fontWeight: 700, color: '#12101F' }}>{children}</strong>,
+                          em: ({ children }) => <em style={{ fontStyle: 'italic' }}>{children}</em>,
+                          hr: () => <hr style={{ border: 'none', borderTop: '1px solid #DCE0E6', margin: '8px 0' }} />,
+                          code: ({ children }) => <code style={{ background: '#E8EDF3', borderRadius: '3px', padding: '1px 4px', fontSize: '11px', fontFamily: 'monospace' }}>{children}</code>,
+                        }}
+                      >
+                        {m.content}
+                      </ReactMarkdown>
                     )}
                   </div>
                 </div>
