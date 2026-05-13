@@ -9,6 +9,8 @@ import AnalyticsSection from '@/components/AnalyticsSection';
 import SollicitatiesSection from '@/components/SollicitatiesSection';
 import GoogleAdsWrapper from '@/components/GoogleAdsWrapper';
 import PlatformCampaignDropdown from '@/components/PlatformCampaignDropdown';
+import ChatPanel from '@/components/ChatPanel';
+import type { DashboardContext } from '@/app/api/chat/route';
 import type { CampaignRow, Platform } from '@/types/campaign';
 import { sumRows } from '@/types/campaign';
 
@@ -214,6 +216,71 @@ export default function DashboardPage() {
     [...campaignSummaries].filter((c) => c.clicks > 0).sort((a, b) => a.cpc - b.cpc)[0] ?? null,
     [campaignSummaries],
   );
+
+  // ── Dashboard context for AI chat ─────────────────────────────────────────
+  const dashboardContext = useMemo((): DashboardContext => {
+    const presetLabel =
+      preset === 'week'    ? 'Deze week' :
+      preset === 'month'   ? 'Deze maand' :
+      preset === '3months' ? 'Afgelopen 3 maanden' : 'Aangepaste periode';
+
+    const topCampaigns = [...campaignSummaries]
+      .sort((a, b) => b.spend - a.spend)
+      .slice(0, 10)
+      .map((c) => ({
+        name:        c.campaign_name,
+        platform:    c.platform,
+        spend:       c.spend,
+        conversions: c.applicants,
+        cpa:         c.cpa === Infinity ? null : c.cpa,
+        clicks:      c.clicks,
+        cpc:         c.cpc === Infinity ? 0 : c.cpc,
+      }));
+
+    return {
+      period:   presetLabel,
+      dateFrom: dateFrom ?? '',
+      dateTo:   dateTo   ?? '',
+      totals: {
+        spend:       totals.spend,
+        impressions: totals.impressions,
+        clicks:      totals.clicks,
+        conversions: totals.conversions,
+        cpa:         overallCpa,
+      },
+      channels: {
+        linkedin: liTotals.spend > 0 || liTotals.clicks > 0 ? {
+          spend: liTotals.spend, clicks: liTotals.clicks, impressions: liTotals.impressions,
+          conversions: liTotals.conversions, cpa: liCpa, ctr: liCtr, cpc: liCpc,
+          thruplays: liTotals.thruplays ?? 0, cpv: liCpv,
+        } : undefined,
+        meta: meTotals.spend > 0 || meTotals.clicks > 0 ? {
+          spend: meTotals.spend, clicks: meTotals.clicks, impressions: meTotals.impressions,
+          conversions: meTotals.conversions, cpa: meCpa, ctr: meCtr, cpc: meCpc,
+          thruplays: meTotals.thruplays ?? 0, cpv: meCpv,
+        } : undefined,
+        google: goTotals.spend > 0 || goTotals.clicks > 0 ? {
+          spend: goTotals.spend, clicks: goTotals.clicks, impressions: goTotals.impressions,
+          conversions: goTotals.conversions, cpa: goCpa, ctr: goCtr, cpc: goCpc,
+        } : undefined,
+      },
+      topCampaigns,
+      bestCpaCampaign: bestCpaCampaign ? {
+        name:        bestCpaCampaign.campaign_name,
+        platform:    bestCpaCampaign.platform,
+        spend:       bestCpaCampaign.spend,
+        conversions: bestCpaCampaign.applicants,
+        cpa:         bestCpaCampaign.cpa === Infinity ? null : bestCpaCampaign.cpa,
+        clicks:      bestCpaCampaign.clicks,
+        cpc:         bestCpaCampaign.cpc === Infinity ? 0 : bestCpaCampaign.cpc,
+      } : null,
+    };
+  }, [
+    preset, dateFrom, dateTo, totals, overallCpa,
+    liTotals, meTotals, goTotals, liCpa, meCpa, goCpa,
+    liCtr, meCtr, goCtr, liCpc, meCpc, goCpc, liCpv, meCpv,
+    campaignSummaries, bestCpaCampaign,
+  ]);
 
   // Per-platform campaign lists for the control-bar dropdowns
   const liCampaigns = useMemo(() =>
@@ -557,6 +624,10 @@ export default function DashboardPage() {
         )}
 
       </div>
+
+      {/* ── AI Chat ──────────────────────────────────────────────────── */}
+      {!loading && <ChatPanel context={dashboardContext} />}
+
     </main>
   );
 }
