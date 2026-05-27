@@ -16,14 +16,16 @@ const PLATFORM_LABEL: Record<Platform, string> = {
 
 interface Props {
   platform:  Platform;
-  campaigns: string[];           // campaign names for this platform
-  selected:  Set<string>;        // global selected set (all platforms)
+  campaigns: string[];
+  selected:  Set<string>;
   onChange:  (next: Set<string>) => void;
 }
 
 export default function PlatformCampaignDropdown({ platform, campaigns, selected, onChange }: Props) {
-  const [open, setOpen] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
+  const [open,   setOpen]   = useState(false);
+  const [search, setSearch] = useState('');
+  const ref       = useRef<HTMLDivElement>(null);
+  const searchRef = useRef<HTMLInputElement>(null);
 
   const color = PLATFORM_COLOR[platform];
   const label = PLATFORM_LABEL[platform];
@@ -36,6 +38,16 @@ export default function PlatformCampaignDropdown({ platform, campaigns, selected
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
   }, []);
+
+  // Focus search on open; clear on close
+  useEffect(() => {
+    if (open) setTimeout(() => searchRef.current?.focus(), 50);
+    else setSearch('');
+  }, [open]);
+
+  const filtered = campaigns.filter((c) =>
+    search.trim() === '' || c.toLowerCase().includes(search.toLowerCase())
+  );
 
   const selectedCount = campaigns.filter((c) => selected.has(c)).length;
   const allSelected   = selectedCount === campaigns.length;
@@ -65,7 +77,6 @@ export default function PlatformCampaignDropdown({ platform, campaigns, selected
 
   return (
     <div ref={ref} className="relative">
-      {/* Trigger button */}
       <button
         onClick={() => setOpen((o) => !o)}
         className="flex items-center gap-2 text-xs font-semibold px-3 py-1.5 transition-all whitespace-nowrap"
@@ -76,10 +87,8 @@ export default function PlatformCampaignDropdown({ platform, campaigns, selected
           color: isFiltered ? color : '#555E6C',
         }}
       >
-        {/* Platform dot */}
         <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: color }} />
         {label}
-        {/* Count badge */}
         <span
           className="px-1.5 py-0.5 rounded text-xs font-bold"
           style={{
@@ -97,7 +106,6 @@ export default function PlatformCampaignDropdown({ platform, campaigns, selected
         </svg>
       </button>
 
-      {/* Dropdown panel */}
       {open && (
         <div
           className="absolute left-0 z-30 mt-1.5 bg-white"
@@ -105,64 +113,73 @@ export default function PlatformCampaignDropdown({ platform, campaigns, selected
             border: '1px solid #DCE0E6',
             borderRadius: '8px',
             boxShadow: '0 8px 24px rgba(18,16,34,0.12)',
-            minWidth: '240px',
+            minWidth: '260px',
           }}
         >
           {/* Header */}
           <div className="flex items-center justify-between px-3 py-2.5" style={{ borderBottom: '1px solid #DCE0E6' }}>
-            <span className="text-xs font-bold uppercase tracking-widest" style={{ color }}>
-              {label}
-            </span>
+            <span className="text-xs font-bold uppercase tracking-widest" style={{ color }}>{label}</span>
             <div className="flex gap-3">
-              <button
-                onClick={selectAll}
-                className="text-xs font-semibold"
-                style={{ color: allSelected ? '#BCC4CF' : '#6331F4' }}
-              >
-                Alles
-              </button>
+              <button onClick={selectAll}   className="text-xs font-semibold" style={{ color: allSelected  ? '#BCC4CF' : '#6331F4' }}>Alles</button>
               <span style={{ color: '#DCE0E6' }}>|</span>
-              <button
-                onClick={deselectAll}
-                className="text-xs font-semibold"
-                style={{ color: noneSelected ? '#BCC4CF' : '#555E6C' }}
-              >
-                Geen
-              </button>
+              <button onClick={deselectAll} className="text-xs font-semibold" style={{ color: noneSelected ? '#BCC4CF' : '#555E6C' }}>Geen</button>
             </div>
           </div>
 
-          {/* Campaign list */}
-          <div className="overflow-y-auto py-1" style={{ maxHeight: '260px' }}>
-            {campaigns.map((name) => {
-              const checked = selected.has(name);
-              return (
-                <label
-                  key={name}
-                  className="flex items-start gap-2.5 px-3 py-2 cursor-pointer select-none transition-colors"
-                  onMouseEnter={(e) => (e.currentTarget.style.background = '#F0F4F8')}
-                  onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
-                >
-                  <input
-                    type="checkbox"
-                    checked={checked}
-                    onChange={() => toggle(name)}
-                    className="mt-0.5 w-3.5 h-3.5 shrink-0"
-                    style={{ accentColor: color }}
-                  />
-                  <span className="text-xs leading-snug" style={{ color: checked ? '#12101F' : '#8C9BAF' }}>
-                    {name}
-                  </span>
-                </label>
-              );
-            })}
+          {/* Search */}
+          <div className="px-3 py-2" style={{ borderBottom: '1px solid #F0F4F8' }}>
+            <input
+              ref={searchRef}
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Zoek op naam…"
+              className="w-full text-xs px-2.5 py-1.5 focus:outline-none"
+              style={{
+                border: '1px solid #DCE0E6', borderRadius: '5px',
+                color: '#12101F', background: '#F8FAFC',
+              }}
+              onFocus={(e) => (e.currentTarget.style.borderColor = '#6331F4')}
+              onBlur={(e)  => (e.currentTarget.style.borderColor = '#DCE0E6')}
+            />
           </div>
 
-          {/* Footer count */}
+          {/* Campaign list */}
+          <div className="overflow-y-auto py-1" style={{ maxHeight: '220px' }}>
+            {filtered.length === 0 ? (
+              <p className="px-3 py-3 text-xs" style={{ color: '#8C9BAF' }}>Geen resultaten voor &ldquo;{search}&rdquo;</p>
+            ) : (
+              filtered.map((name) => {
+                const checked = selected.has(name);
+                return (
+                  <label
+                    key={name}
+                    className="flex items-start gap-2.5 px-3 py-2 cursor-pointer select-none transition-colors"
+                    onMouseEnter={(e) => (e.currentTarget.style.background = '#F0F4F8')}
+                    onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={checked}
+                      onChange={() => toggle(name)}
+                      className="mt-0.5 w-3.5 h-3.5 shrink-0"
+                      style={{ accentColor: color }}
+                    />
+                    <span className="text-xs leading-snug" style={{ color: checked ? '#12101F' : '#8C9BAF' }}>
+                      {name}
+                    </span>
+                  </label>
+                );
+              })
+            )}
+          </div>
+
+          {/* Footer */}
           <div className="px-3 py-2.5" style={{ borderTop: '1px solid #DCE0E6' }}>
             <span className="text-xs" style={{ color: '#8C9BAF' }}>
               <span className="font-semibold" style={{ color: '#12101F' }}>{selectedCount}</span>
               {' '}/ {campaigns.length} geselecteerd
+              {search.trim() && ` · ${filtered.length} gevonden`}
             </span>
           </div>
         </div>

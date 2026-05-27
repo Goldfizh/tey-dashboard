@@ -6,6 +6,7 @@ interface Props {
   impressions: number;
   thruplays?: number;
   isWinner: boolean;
+  forceVideoMetrics?: boolean;
 }
 
 const fmtEur = (n: number) =>
@@ -38,7 +39,7 @@ export function ChannelCardSkeleton() {
   );
 }
 
-export default function ChannelCard({ platform, spend, applicants, clicks, impressions, thruplays = 0, isWinner }: Props) {
+export default function ChannelCard({ platform, spend, applicants, clicks, impressions, thruplays = 0, isWinner, forceVideoMetrics = false }: Props) {
   const cfg = CONFIG[platform];
   const cpa = applicants > 0 ? spend / applicants : null;
   const ctr = impressions > 0 ? clicks / impressions : 0;
@@ -95,7 +96,7 @@ export default function ChannelCard({ platform, spend, applicants, clicks, impre
           <p className="text-xs text-[#8C9BAF] mb-0.5">Kosten per klik</p>
           <p className="text-sm font-semibold text-[#12101F]">{cpc > 0 ? fmtEur2(cpc) : '—'}</p>
         </div>
-        {thruplays > 0 && (
+        {(thruplays > 0 || forceVideoMetrics) && (
           <>
             <div>
               <p className="text-xs text-[#8C9BAF] mb-0.5">Voltooide video views</p>

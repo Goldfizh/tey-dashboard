@@ -1,8 +1,10 @@
 interface KpiCardProps {
-  title: string;
-  value: string;
-  subtitle?: string;
-  accent?: boolean; // highlight border with purple
+  title:          string;
+  value:          string;
+  subtitle?:      string;
+  accent?:        boolean;    // highlight border with green
+  delta?:         number | null; // fraction: 0.05 = +5%, -0.1 = -10%
+  deltaInverted?: boolean;   // true = lower is better (e.g. CPA)
 }
 
 export function KpiCardSkeleton() {
@@ -15,7 +17,23 @@ export function KpiCardSkeleton() {
   );
 }
 
-export default function KpiCard({ title, value, subtitle, accent }: KpiCardProps) {
+function DeltaBadge({ delta, inverted }: { delta: number; inverted: boolean }) {
+  const positive = inverted ? delta < 0 : delta > 0;
+  const pct = `${delta > 0 ? '+' : ''}${(delta * 100).toFixed(1)}%`;
+  const arrow = delta > 0 ? '↑' : '↓';
+  const color = positive ? '#16A34A' : '#DC2626';
+  const bg    = positive ? '#F0FDF4' : '#FEF2F2';
+  return (
+    <span
+      className="inline-flex items-center gap-0.5 text-xs font-semibold px-1.5 py-0.5 rounded"
+      style={{ color, background: bg }}
+    >
+      {arrow} {pct}
+    </span>
+  );
+}
+
+export default function KpiCard({ title, value, subtitle, accent, delta, deltaInverted = false }: KpiCardProps) {
   return (
     <div
       className="bg-white rounded-lg p-5"
@@ -26,7 +44,10 @@ export default function KpiCard({ title, value, subtitle, accent }: KpiCardProps
     >
       <p className="gf-eyebrow mb-2">{title}</p>
       <p className="gf-display text-[2rem] font-light text-[#12101F] tabular-nums">{value}</p>
-      {subtitle && <p className="text-xs text-[#8C9BAF] mt-1.5">{subtitle}</p>}
+      <div className="flex items-center gap-2 mt-1.5">
+        {subtitle && <p className="text-xs text-[#8C9BAF]">{subtitle}</p>}
+        {delta != null && <DeltaBadge delta={delta} inverted={deltaInverted} />}
+      </div>
     </div>
   );
 }
