@@ -4,13 +4,10 @@ import { JWT } from 'google-auth-library';
 import { getRawSheetData, getCampaigns } from '@/lib/sheets';
 import type { Platform } from '@/types/campaign';
 
-// Development-only — returns raw headers, sample rows, and lists all tab names
-// in the spreadsheet so you can verify the exact tab names.
+// Diagnostic — returns raw headers, sample rows, tab names and parsed per-platform totals.
+// Protected by the app's auth middleware (proxy.ts): only logged-in users can reach it, and it
+// exposes the same campaign data already visible in the dashboard.
 export async function GET() {
-  if (process.env.NODE_ENV === 'production') {
-    return NextResponse.json({ error: 'Not available in production' }, { status: 403 });
-  }
-
   const sheetId = process.env.GOOGLE_SHEETS_ID ?? '(not set)';
 
   // First: list all actual tab names in the spreadsheet
