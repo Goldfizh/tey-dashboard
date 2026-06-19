@@ -33,9 +33,10 @@ interface PlatformBlockProps {
   campaigns: string[];
   selected:  Set<string>;
   onChange:  (next: Set<string>) => void;
+  running:   Set<string>;
 }
 
-function PlatformBlock({ platform, campaigns, selected, onChange }: PlatformBlockProps) {
+function PlatformBlock({ platform, campaigns, selected, onChange, running }: PlatformBlockProps) {
   const [search, setSearch] = useState('');
   const color = PLATFORM_COLOR[platform];
   const label = PLATFORM_LABEL[platform];
@@ -129,9 +130,15 @@ function PlatformBlock({ platform, campaigns, selected, onChange }: PlatformBloc
                 onChange={() => toggle(name)}
                 style={{ marginTop: '2px', width: '13px', height: '13px', flexShrink: 0, accentColor: color, cursor: 'pointer' }}
               />
-              <span style={{ fontSize: '11px', lineHeight: 1.4, color: checked ? '#12101F' : '#8C9BAF', wordBreak: 'break-word' }}>
+              <span style={{ fontSize: '11px', lineHeight: 1.4, color: checked ? '#12101F' : '#8C9BAF', wordBreak: 'break-word', flex: 1 }}>
                 {name}
               </span>
+              {running.has(name) && (
+                <span
+                  title="Loopt (activiteit in laatste 7 dagen)"
+                  style={{ width: 6, height: 6, borderRadius: '50%', background: '#16A34A', flexShrink: 0, marginTop: '6px' }}
+                />
+              )}
             </label>
           );
         })}
@@ -159,6 +166,7 @@ interface Props {
   goCampaigns: string[];
   selected:    Set<string>;
   onSelect:    (next: Set<string>) => void;
+  runningCampaigns: Set<string>;
 
   autoObjective:   Objective;
   manualObjective: Objective | null;
@@ -169,9 +177,12 @@ export default function CampaignSidebar({
   open, onToggle,
   liCampaigns, meCampaigns, goCampaigns,
   selected, onSelect,
+  runningCampaigns,
   autoObjective, manualObjective, onObjective,
 }: Props) {
   const effectiveObjective = manualObjective ?? autoObjective;
+  const allCampaigns       = [...liCampaigns, ...meCampaigns, ...goCampaigns];
+  const runningCount       = allCampaigns.filter((c) => runningCampaigns.has(c)).length;
 
   return (
     <aside
@@ -286,13 +297,46 @@ export default function CampaignSidebar({
           <div style={{ borderTop: '1px solid #DCE0E6', marginBottom: '16px' }} />
 
           {/* ── Campagnes ── */}
-          <p style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#8C9BAF', marginBottom: '12px' }}>
-            Campagnes
-          </p>
+          <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: '8px' }}>
+            <p style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#8C9BAF' }}>
+              Campagnes
+            </p>
+            <span style={{ fontSize: '10px', color: '#BCC4CF' }}>
+              {selected.size}/{allCampaigns.length}
+            </span>
+          </div>
 
-          <PlatformBlock platform="linkedin" campaigns={liCampaigns} selected={selected} onChange={onSelect} />
-          <PlatformBlock platform="meta"     campaigns={meCampaigns} selected={selected} onChange={onSelect} />
-          <PlatformBlock platform="google"   campaigns={goCampaigns} selected={selected} onChange={onSelect} />
+          {/* Quick filters */}
+          <div style={{ display: 'flex', gap: '6px', marginBottom: '14px' }}>
+            <button
+              onClick={() => onSelect(new Set(runningCampaigns))}
+              title="Selecteer alleen campagnes met activiteit in de laatste 7 dagen"
+              style={{
+                fontSize: '11px', fontWeight: 600, padding: '5px 8px',
+                background: '#16A34A14', color: '#16A34A',
+                border: '1px solid #16A34A44', borderRadius: '5px',
+                cursor: 'pointer', flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '5px',
+              }}
+            >
+              <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#16A34A' }} />
+              Lopend ({runningCount})
+            </button>
+            <button
+              onClick={() => onSelect(new Set(allCampaigns))}
+              style={{
+                fontSize: '11px', fontWeight: 600, padding: '5px 8px',
+                background: '#ffffff', color: '#555E6C',
+                border: '1px solid #DCE0E6', borderRadius: '5px',
+                cursor: 'pointer', flex: 1,
+              }}
+            >
+              Alles ({allCampaigns.length})
+            </button>
+          </div>
+
+          <PlatformBlock platform="linkedin" campaigns={liCampaigns} selected={selected} onChange={onSelect} running={runningCampaigns} />
+          <PlatformBlock platform="meta"     campaigns={meCampaigns} selected={selected} onChange={onSelect} running={runningCampaigns} />
+          <PlatformBlock platform="google"   campaigns={goCampaigns} selected={selected} onChange={onSelect} running={runningCampaigns} />
 
         </div>
       )}

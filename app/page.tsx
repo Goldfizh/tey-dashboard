@@ -174,7 +174,28 @@ export default function DashboardPage() {
 
   useEffect(() => { fetchData(); }, [fetchData]);
 
-  // Smart campaign selection initialisation with localStorage persistence
+  // Running campaigns = recent activity in last 7 days of available data.
+  // Robust to data lag: uses dataset max date, not wall-clock today.
+  const runningCampaigns = useMemo(() => {
+    if (rows.length === 0) return new Set<string>();
+    const maxByCampaign = new Map<string, string>();
+    let datasetMax = '';
+    for (const r of rows) {
+      if (r.date > datasetMax) datasetMax = r.date;
+      const cur = maxByCampaign.get(r.campaign_name);
+      if (!cur || r.date > cur) maxByCampaign.set(r.campaign_name, r.date);
+    }
+    const cutoffMs = new Date(datasetMax + 'T00:00:00').getTime() - 7 * 86_400_000;
+    const cutoff   = fmt(new Date(cutoffMs));
+    const running  = new Set<string>();
+    for (const [name, lastDate] of maxByCampaign) {
+      if (lastDate >= cutoff) running.add(name);
+    }
+    return running;
+  }, [rows]);
+
+  // Smart campaign selection initialisation with localStorage persistence.
+  // Default = running campaigns only, so the marketeer lands on what's NOW relevant.
   const hasInitCampaignsRef = useRef(false);
 
   useEffect(() => {
@@ -190,7 +211,8 @@ export default function DashboardPage() {
           if (valid.size > 0) { setSelectedCampaigns(valid); return; }
         }
       } catch { /* ignore */ }
-      setSelectedCampaigns(allNames);
+      // No saved preference: default to running campaigns; fall back to all if none are running.
+      setSelectedCampaigns(runningCampaigns.size > 0 ? new Set(runningCampaigns) : allNames);
     } else {
       // Refresh: keep current selection, reconcile
       setSelectedCampaigns((prev) => {
@@ -198,7 +220,7 @@ export default function DashboardPage() {
         return next.size > 0 ? next : allNames;
       });
     }
-  }, [rows]);
+  }, [rows, runningCampaigns]);
 
   useEffect(() => {
     if (selectedCampaigns.size > 0)
@@ -678,6 +700,7 @@ export default function DashboardPage() {
               goCampaigns={goCampaigns}
               selected={selectedCampaigns}
               onSelect={setSelectedCampaigns}
+              runningCampaigns={runningCampaigns}
               autoObjective={autoObjective}
               manualObjective={manualObjective}
               onObjective={setManualObjective}
