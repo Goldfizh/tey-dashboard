@@ -6,6 +6,7 @@ import ChannelCard, { ChannelCardSkeleton } from '@/components/ChannelCard';
 import CampaignRankTable, { CampaignRankTableSkeleton } from '@/components/CampaignRankTable';
 import CpaTrendChart, { CpaTrendChartSkeleton } from '@/components/CpaTrendChart';
 import PacingTable, { PacingTableSkeleton } from '@/components/PacingTable';
+import DailyDeliveryChart, { DailyDeliveryChartSkeleton } from '@/components/DailyDeliveryChart';
 import AnalyticsSection from '@/components/AnalyticsSection';
 import SollicitatiesSection from '@/components/SollicitatiesSection';
 import GoogleAdsWrapper from '@/components/GoogleAdsWrapper';
@@ -906,6 +907,18 @@ export default function DashboardPage() {
                 {loading
                   ? <CampaignRankTableSkeleton />
                   : <CampaignRankTable rows={filteredRows} objective={effectiveObjective} />
+                }
+              </section>
+
+              {/* Daily delivery per campaign */}
+              <section>
+                <h2 className="gf-eyebrow mb-5">Dagelijkse uitlevering per campagne</h2>
+                {loading
+                  ? <DailyDeliveryChartSkeleton />
+                  : <DailyDeliveryChart
+                      allRows={rows.filter((r) => selectedCampaigns.size === 0 || selectedCampaigns.has(r.campaign_name))}
+                      filteredRows={filteredRows}
+                    />
                 }
               </section>
 
