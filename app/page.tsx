@@ -1026,7 +1026,7 @@ export default function DashboardPage() {
                 <h2 className="gf-eyebrow mb-5">Pacing</h2>
                 {loading
                   ? <PacingTableSkeleton />
-                  : <PacingTable allRows={rows} filteredRows={filteredRows} dateTo={dateTo} />
+                  : <PacingTable allRows={rows} filteredRows={filtered} dateTo={dateTo} />
                 }
               </section>
 
