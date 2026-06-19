@@ -1,11 +1,14 @@
+import type { Objective } from '@/types/objective';
+
 interface Props {
-  platform: 'linkedin' | 'meta' | 'google';
-  spend: number;
-  applicants: number;
-  clicks: number;
+  platform:    'linkedin' | 'meta' | 'google';
+  spend:       number;
+  applicants:  number;
+  clicks:      number;
   impressions: number;
-  thruplays?: number;
-  isWinner: boolean;
+  thruplays?:  number;
+  isWinner:    boolean;
+  objective?:  Objective;
 }
 
 const fmtEur = (n: number) =>
@@ -38,12 +41,48 @@ export function ChannelCardSkeleton() {
   );
 }
 
-export default function ChannelCard({ platform, spend, applicants, clicks, impressions, thruplays = 0, isWinner }: Props) {
+function Stat({ label, value }: { label: string; value: string }) {
+  return (
+    <div>
+      <p className="text-xs text-[#8C9BAF] mb-0.5">{label}</p>
+      <p className="text-sm font-semibold text-[#12101F]">{value}</p>
+    </div>
+  );
+}
+
+export default function ChannelCard({
+  platform, spend, applicants, clicks, impressions,
+  thruplays = 0, isWinner, objective,
+}: Props) {
   const cfg = CONFIG[platform];
-  const cpa = applicants > 0 ? spend / applicants : null;
+
+  // Computed metrics
+  const cpa = applicants  > 0 ? spend / applicants  : null;
   const ctr = impressions > 0 ? clicks / impressions : 0;
-  const cpc = clicks > 0 ? spend / clicks : 0;
-  const cpv = thruplays > 0 ? spend / thruplays : null;
+  const cpc = clicks      > 0 ? spend / clicks       : 0;
+  const cpm = impressions > 0 ? spend / impressions * 1000 : null;
+  const cpv = thruplays   > 0 ? spend / thruplays   : null;
+  const vtr = impressions > 0 ? thruplays / impressions    : 0;
+
+  // View-mode flags
+  const isVideo      = objective === 'video';
+  const isImpressies = objective === 'impressies' || objective === 'verkeer';
+  const isLeads      = objective === 'leads';
+
+  // Hero metric
+  const heroLabel = isVideo      ? 'Kosten per video view (CPCV)'
+                  : isImpressies ? 'Kosten per 1000 impressies (CPM)'
+                  : isLeads      ? 'Kosten per lead (CPL)'
+                  :                'Kosten per sollicitant';
+  const heroValue = isVideo      ? (cpv !== null ? fmtEur2(cpv) : '—')
+                  : isImpressies ? (cpm !== null ? fmtEur2(cpm) : '—')
+                  : (cpa !== null ? fmtEur2(cpa) : '—');
+
+  // Winner badge label
+  const winLabel = isVideo      ? 'Laagste CPCV'
+                 : isImpressies ? 'Laagste CPM'
+                 : isLeads      ? 'Beste CPL'
+                 :                'Beste CPA';
 
   return (
     <div
@@ -60,7 +99,7 @@ export default function ChannelCard({ platform, spend, applicants, clicks, impre
           className="absolute top-4 right-4 text-xs font-bold px-2 py-0.5 rounded"
           style={{ background: '#DCFCE7', color: '#16A34A' }}
         >
-          Beste CPA
+          {winLabel}
         </span>
       )}
 
@@ -69,42 +108,34 @@ export default function ChannelCard({ platform, spend, applicants, clicks, impre
         {cfg.label}
       </p>
 
-      {/* CPA — hero metric */}
+      {/* Hero metric */}
       <div className="mb-6">
-        <p className="text-xs text-[#8C9BAF] uppercase tracking-widest mb-1">Kosten per sollicitant</p>
-        <p className="gf-display text-4xl font-light text-[#12101F] tabular-nums">
-          {cpa !== null ? fmtEur2(cpa) : '—'}
-        </p>
+        <p className="text-xs text-[#8C9BAF] uppercase tracking-widest mb-1">{heroLabel}</p>
+        <p className="gf-display text-4xl font-light text-[#12101F] tabular-nums">{heroValue}</p>
       </div>
 
-      {/* Supporting metrics */}
+      {/* Supporting metrics grid */}
       <div className="grid grid-cols-2 gap-x-6 gap-y-4 pt-4 border-t border-[#DCE0E6]">
-        <div>
-          <p className="text-xs text-[#8C9BAF] mb-0.5">Budget gespendeerd</p>
-          <p className="text-sm font-semibold text-[#12101F]">{fmtEur(spend)}</p>
-        </div>
-        <div>
-          <p className="text-xs text-[#8C9BAF] mb-0.5">Sollicitanten</p>
-          <p className="text-sm font-semibold text-[#12101F]">{fmtNum(applicants)}</p>
-        </div>
-        <div>
-          <p className="text-xs text-[#8C9BAF] mb-0.5">CTR</p>
-          <p className="text-sm font-semibold text-[#12101F]">{fmtPct(ctr)}</p>
-        </div>
-        <div>
-          <p className="text-xs text-[#8C9BAF] mb-0.5">Kosten per klik</p>
-          <p className="text-sm font-semibold text-[#12101F]">{cpc > 0 ? fmtEur2(cpc) : '—'}</p>
-        </div>
-        {thruplays > 0 && (
+        {isVideo ? (
           <>
-            <div>
-              <p className="text-xs text-[#8C9BAF] mb-0.5">Voltooide video views</p>
-              <p className="text-sm font-semibold text-[#12101F]">{fmtNum(thruplays)}</p>
-            </div>
-            <div>
-              <p className="text-xs text-[#8C9BAF] mb-0.5">Kosten per video view</p>
-              <p className="text-sm font-semibold text-[#12101F]">{cpv !== null ? fmtEur2(cpv) : '—'}</p>
-            </div>
+            <Stat label="Budget gespendeerd"  value={fmtEur(spend)} />
+            <Stat label="Completed views"     value={thruplays > 0 ? fmtNum(thruplays) : '—'} />
+            <Stat label="Impressies"          value={fmtNum(impressions)} />
+            <Stat label="VTR"                 value={vtr > 0 ? fmtPct(vtr) : '—'} />
+          </>
+        ) : isImpressies ? (
+          <>
+            <Stat label="Budget gespendeerd"  value={fmtEur(spend)} />
+            <Stat label="Impressies"          value={fmtNum(impressions)} />
+            <Stat label="Clicks"              value={fmtNum(clicks)} />
+            <Stat label="CTR"                 value={fmtPct(ctr)} />
+          </>
+        ) : (
+          <>
+            <Stat label="Budget gespendeerd"  value={fmtEur(spend)} />
+            <Stat label={isLeads ? 'Leads' : 'Sollicitanten'} value={fmtNum(applicants)} />
+            <Stat label="CTR"                 value={fmtPct(ctr)} />
+            <Stat label="Kosten per klik"     value={cpc > 0 ? fmtEur2(cpc) : '—'} />
           </>
         )}
       </div>
