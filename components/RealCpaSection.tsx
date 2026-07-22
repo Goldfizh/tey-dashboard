@@ -80,8 +80,8 @@ export default function RealCpaSection({ spend, completions, missing, loading, a
       <div className="grid grid-cols-2 md:grid-cols-4">
         {/* Total */}
         <div className="p-5" style={{ borderRight: '1px solid #F0F4F8', borderBottom: '1px solid #F0F4F8', background: '#FAFBFF' }}>
-          <p className="text-xs font-bold uppercase tracking-widest mb-2" style={{ color: '#6331F4' }}>Alle kanalen</p>
-          <p className="gf-display text-[1.9rem] font-light tabular-nums" style={{ color: '#12101F' }}>
+          <p className="text-xs font-bold uppercase tracking-widest mb-2" style={{ color: '#1E3A8A' }}>Alle kanalen</p>
+          <p className="gf-display text-[1.9rem] font-light tabular-nums" style={{ color: '#0B1020' }}>
             {totalCpa !== null ? fmtEur2(totalCpa) : '—'}
           </p>
           <p className="text-xs mt-1.5" style={{ color: '#8C9BAF' }}>
@@ -116,7 +116,7 @@ export default function RealCpaSection({ spend, completions, missing, loading, a
                   </span>
                 )}
               </div>
-              <p className="gf-display text-[1.9rem] font-light tabular-nums" style={{ color: isCheap ? '#16A34A' : '#12101F' }}>
+              <p className="gf-display text-[1.9rem] font-light tabular-nums" style={{ color: isCheap ? '#16A34A' : '#0B1020' }}>
                 {missingSpend ? 'ontbreekt' : cpa !== null ? fmtEur2(cpa) : '—'}
               </p>
               <p className="text-xs mt-1.5" style={{ color: missingSpend || noSpend ? '#F59E0B' : '#8C9BAF' }}>

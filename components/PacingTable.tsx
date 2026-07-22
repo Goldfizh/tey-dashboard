@@ -224,7 +224,7 @@ export default function PacingTable({ allRows, filteredRows, dateTo }: Props) {
                   <td
                     className="px-5 py-3.5 font-medium max-w-xs truncate"
                     title={c.campaign_name}
-                    style={{ color: '#12101F' }}
+                    style={{ color: '#0B1020' }}
                   >
                     {c.campaign_name}
                   </td>
@@ -236,7 +236,7 @@ export default function PacingTable({ allRows, filteredRows, dateTo }: Props) {
                       style={{
                         background:   platformColor,
                         borderRadius: '4px',
-                        color:        c.platform === 'google' ? '#12101F' : '#ffffff',
+                        color:        c.platform === 'google' ? '#0B1020' : '#ffffff',
                       }}
                     >
                       {PLATFORM_LABEL[c.platform]}
@@ -255,7 +255,7 @@ export default function PacingTable({ allRows, filteredRows, dateTo }: Props) {
 
                   {/* Runtime pacing */}
                   <td className="px-5 py-3.5" style={{ minWidth: '180px' }}>
-                    <PacingBar pct={c.runtimePct} color="#6331F4" />
+                    <PacingBar pct={c.runtimePct} color="#1E3A8A" />
                     <p className="text-xs mt-1" style={{ color: '#BCC4CF' }}>
                       dag {c.elapsedDays} van {c.totalDays}
                     </p>

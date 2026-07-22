@@ -123,7 +123,7 @@ export function ComboCard({
   lineKey,
   barLabel,
   lineLabel,
-  barColor = '#7C3AED',
+  barColor = '#2563EB',
   lineColor = '#9ca3af',
   barFormat,
   lineFormat,

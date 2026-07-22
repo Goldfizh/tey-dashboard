@@ -73,13 +73,13 @@ function VacatureDropdown({ allTitles, selected, onChange }: DropdownProps) {
         className="flex items-center gap-2 text-sm font-semibold px-4 py-2.5 transition-all"
         style={{
           background: '#ffffff',
-          border: `1.5px solid ${open ? '#6331F4' : '#DCE0E6'}`,
+          border: `1.5px solid ${open ? '#1E3A8A' : '#DCE0E6'}`,
           borderRadius: '8px',
-          color: '#12101F',
+          color: '#0B1020',
           boxShadow: open ? '0 0 0 3px rgba(99,49,244,0.1)' : undefined,
         }}
       >
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style={{ color: '#6331F4', flexShrink: 0 }}>
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style={{ color: '#1E3A8A', flexShrink: 0 }}>
           <path d="M1 3h12M3 7h8M5 11h4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
         </svg>
         {allSelected
@@ -113,7 +113,7 @@ function VacatureDropdown({ allTitles, selected, onChange }: DropdownProps) {
               <button
                 onClick={() => onChange(new Set(allTitles))}
                 className="text-xs font-semibold"
-                style={{ color: allSelected ? '#BCC4CF' : '#6331F4' }}
+                style={{ color: allSelected ? '#BCC4CF' : '#1E3A8A' }}
               >
                 Alles
               </button>
@@ -144,9 +144,9 @@ function VacatureDropdown({ allTitles, selected, onChange }: DropdownProps) {
                     checked={checked}
                     onChange={() => toggle(title)}
                     className="mt-0.5 w-3.5 h-3.5 shrink-0"
-                    style={{ accentColor: '#6331F4' }}
+                    style={{ accentColor: '#1E3A8A' }}
                   />
-                  <span className="text-xs leading-snug" style={{ color: checked ? '#12101F' : '#8C9BAF' }}>
+                  <span className="text-xs leading-snug" style={{ color: checked ? '#0B1020' : '#8C9BAF' }}>
                     {shortTitle(title)}
                   </span>
                 </label>
@@ -157,7 +157,7 @@ function VacatureDropdown({ allTitles, selected, onChange }: DropdownProps) {
           {/* Footer */}
           <div className="px-4 py-2.5" style={{ borderTop: '1px solid #DCE0E6' }}>
             <span className="text-xs" style={{ color: '#8C9BAF' }}>
-              <span className="font-semibold" style={{ color: '#12101F' }}>{selected.size}</span>
+              <span className="font-semibold" style={{ color: '#0B1020' }}>{selected.size}</span>
               {' '}/ {allTitles.length} geselecteerd
             </span>
           </div>
@@ -336,7 +336,7 @@ export default function SollicitatiesSection({ dateFrom, dateTo, channelSpend, s
       <div className="flex items-center gap-3">
         <VacatureDropdown allTitles={allTitles} selected={selectedTitles} onChange={setSelectedTitles} />
         {selectedTitles.size < allTitles.length && selectedTitles.size > 0 && (
-          <span className="text-xs font-semibold" style={{ color: '#6331F4' }}>gefilterd</span>
+          <span className="text-xs font-semibold" style={{ color: '#1E3A8A' }}>gefilterd</span>
         )}
       </div>
 
@@ -351,7 +351,7 @@ export default function SollicitatiesSection({ dateFrom, dateTo, channelSpend, s
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4">
             {([
-              ['Alle kanalen', channelCost.total, channelCost.paidSpend, channelCost.paidComp, '#6331F4', true, false],
+              ['Alle kanalen', channelCost.total, channelCost.paidSpend, channelCost.paidComp, '#1E3A8A', true, false],
               ['LinkedIn', channelCost.perChannel.linkedin, channelSpend!.linkedin, channelCost.comp.linkedin, '#0077B5', false, spendMissing?.linkedin ?? false],
               ['Meta', channelCost.perChannel.meta, channelSpend!.meta, channelCost.comp.meta, '#1877F2', false, spendMissing?.meta ?? false],
               ['Google Ads', channelCost.perChannel.google, channelSpend!.google, channelCost.comp.google, '#F59E0B', false, spendMissing?.google ?? false],
@@ -361,7 +361,7 @@ export default function SollicitatiesSection({ dateFrom, dateTo, channelSpend, s
                   {!isTotal && <span className="w-2 h-2 rounded-full" style={{ background: color }} />}
                   <p className="text-xs font-bold uppercase tracking-widest" style={{ color }}>{label}</p>
                 </div>
-                <p className="gf-display text-[1.9rem] font-light tabular-nums" style={{ color: '#12101F' }}>
+                <p className="gf-display text-[1.9rem] font-light tabular-nums" style={{ color: '#0B1020' }}>
                   {missing ? 'ontbreekt' : cpa !== null ? fmtEur2(cpa) : '—'}
                 </p>
                 <p className="text-xs mt-1.5" style={{ color: missing ? '#F59E0B' : '#8C9BAF' }}>
@@ -389,7 +389,7 @@ export default function SollicitatiesSection({ dateFrom, dateTo, channelSpend, s
               {/* Started */}
               <div className="flex-1 rounded-l-lg px-5 py-4" style={{ background: '#F0F4F8' }}>
                 <p className="text-xs font-bold uppercase tracking-widest mb-1" style={{ color: '#8C9BAF' }}>Formulier gestart</p>
-                <p className="text-3xl font-bold tabular-nums" style={{ color: '#12101F' }}>{fmtNum(funnel.starts)}</p>
+                <p className="text-3xl font-bold tabular-nums" style={{ color: '#0B1020' }}>{fmtNum(funnel.starts)}</p>
                 <p className="text-xs mt-1" style={{ color: '#BCC4CF' }}>application_form_start</p>
               </div>
 
@@ -402,7 +402,7 @@ export default function SollicitatiesSection({ dateFrom, dateTo, channelSpend, s
               {/* Completed */}
               <div className="flex-1 px-5 py-4" style={{ background: '#F0F4F8' }}>
                 <p className="text-xs font-bold uppercase tracking-widest mb-1" style={{ color: '#8C9BAF' }}>Sollicitatie voltooid</p>
-                <p className="text-3xl font-bold tabular-nums" style={{ color: '#12101F' }}>{fmtNum(funnel.completed)}</p>
+                <p className="text-3xl font-bold tabular-nums" style={{ color: '#0B1020' }}>{fmtNum(funnel.completed)}</p>
                 <p className="text-xs mt-1" style={{ color: '#BCC4CF' }}>Sollicitatie_voltooid_recruitee</p>
               </div>
 
@@ -421,7 +421,7 @@ export default function SollicitatiesSection({ dateFrom, dateTo, channelSpend, s
                 }}
               >
                 <p className="text-xs font-bold uppercase tracking-widest mb-1" style={{ color: '#8C9BAF' }}>Afrondingsratio</p>
-                <p className="text-3xl font-bold tabular-nums" style={{ color: funnel.rate !== null && funnel.rate >= 0.5 ? '#16A34A' : '#12101F' }}>
+                <p className="text-3xl font-bold tabular-nums" style={{ color: funnel.rate !== null && funnel.rate >= 0.5 ? '#16A34A' : '#0B1020' }}>
                   {funnel.rate !== null ? `${(funnel.rate * 100).toFixed(1)}%` : '—'}
                 </p>
                 <p className="text-xs mt-1" style={{ color: '#BCC4CF' }}>Gestart → voltooid</p>
@@ -456,7 +456,7 @@ export default function SollicitatiesSection({ dateFrom, dateTo, channelSpend, s
                   <th className="px-5 py-3 text-right text-xs font-bold uppercase tracking-wider whitespace-nowrap" style={{ color: '#F59E0B' }}>Google</th>
                   <th className="px-5 py-3 text-right text-xs font-bold uppercase tracking-wider whitespace-nowrap" style={{ color: '#8C9BAF' }}>Overig</th>
                   <th className="px-5 py-3 text-right text-xs font-bold uppercase tracking-wider whitespace-nowrap" style={{ color: '#8C9BAF' }}>Gestart</th>
-                  <th className="px-5 py-3 text-right text-xs font-bold uppercase tracking-wider whitespace-nowrap" style={{ color: '#12101F' }}>Voltooid</th>
+                  <th className="px-5 py-3 text-right text-xs font-bold uppercase tracking-wider whitespace-nowrap" style={{ color: '#0B1020' }}>Voltooid</th>
                   <th className="px-5 py-3 text-right text-xs font-bold uppercase tracking-wider whitespace-nowrap" style={{ color: '#8C9BAF' }}>Ratio</th>
                 </tr>
               </thead>
@@ -468,7 +468,7 @@ export default function SollicitatiesSection({ dateFrom, dateTo, channelSpend, s
                     : '#E02D3C';
                   return (
                     <tr key={i} style={{ borderBottom: '1px solid #F0F4F8' }} className="last:border-0 hover:bg-[#F0F4F8]/60 transition-colors">
-                      <td className="px-5 py-3.5 font-medium" title={r.jobTitle} style={{ color: '#12101F', maxWidth: '380px' }}>
+                      <td className="px-5 py-3.5 font-medium" title={r.jobTitle} style={{ color: '#0B1020', maxWidth: '380px' }}>
                         {r.jobTitle}
                       </td>
                       <td className="px-5 py-3.5 text-right tabular-nums" style={{ color: r.linkedin > 0 ? '#0077B5' : '#BCC4CF', fontWeight: r.linkedin > 0 ? 600 : 400 }}>
@@ -486,7 +486,7 @@ export default function SollicitatiesSection({ dateFrom, dateTo, channelSpend, s
                       <td className="px-5 py-3.5 text-right tabular-nums" style={{ color: r.starts > 0 ? '#555E6C' : '#BCC4CF' }}>
                         {r.starts > 0 ? fmtNum(r.starts) : '—'}
                       </td>
-                      <td className="px-5 py-3.5 text-right tabular-nums font-bold" style={{ color: '#12101F' }}>
+                      <td className="px-5 py-3.5 text-right tabular-nums font-bold" style={{ color: '#0B1020' }}>
                         {fmtNum(r.completed)}
                       </td>
                       <td className="px-5 py-3.5 text-right tabular-nums font-semibold whitespace-nowrap" style={{ color: rateColor }}>

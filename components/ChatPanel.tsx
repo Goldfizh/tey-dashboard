@@ -176,7 +176,7 @@ export default function ChatPanel({ context }: Props) {
           width: '56px',
           height: '56px',
           borderRadius: '50%',
-          background: '#6331F4',
+          background: '#1E3A8A',
           color: '#ffffff',
           border: 'none',
           cursor: 'pointer',
@@ -186,8 +186,8 @@ export default function ChatPanel({ context }: Props) {
           boxShadow: '0 8px 24px rgba(99,49,244,0.40)',
           transition: 'background 0.15s',
         }}
-        onMouseEnter={(e) => (e.currentTarget.style.background = '#5436CE')}
-        onMouseLeave={(e) => (e.currentTarget.style.background = '#6331F4')}
+        onMouseEnter={(e) => (e.currentTarget.style.background = '#16295E')}
+        onMouseLeave={(e) => (e.currentTarget.style.background = '#1E3A8A')}
       >
         {open ? <IconClose /> : <IconChat />}
       </button>
@@ -225,7 +225,7 @@ export default function ChatPanel({ context }: Props) {
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
               <div style={{
-                width: 28, height: 28, borderRadius: '50%', background: '#6331F4',
+                width: 28, height: 28, borderRadius: '50%', background: '#1E3A8A',
                 display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
               }}>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -233,7 +233,7 @@ export default function ChatPanel({ context }: Props) {
                 </svg>
               </div>
               <div>
-                <p style={{ fontSize: '13px', fontWeight: 700, color: '#12101F', lineHeight: 1.2, margin: 0 }}>
+                <p style={{ fontSize: '13px', fontWeight: 700, color: '#0B1020', lineHeight: 1.2, margin: 0 }}>
                   AI Campagne-adviseur
                 </p>
                 <p style={{ fontSize: '11px', color: '#8C9BAF', margin: 0 }}>
@@ -276,7 +276,7 @@ export default function ChatPanel({ context }: Props) {
                         background: '#F0F4F8', border: '1px solid #DCE0E6', borderRadius: '8px',
                         color: '#555E6C', lineHeight: 1.4, cursor: 'pointer', transition: 'all 0.15s',
                       }}
-                      onMouseEnter={(e) => { e.currentTarget.style.background = '#E8EDF3'; e.currentTarget.style.borderColor = '#6331F4'; e.currentTarget.style.color = '#6331F4'; }}
+                      onMouseEnter={(e) => { e.currentTarget.style.background = '#E8EDF3'; e.currentTarget.style.borderColor = '#1E3A8A'; e.currentTarget.style.color = '#1E3A8A'; }}
                       onMouseLeave={(e) => { e.currentTarget.style.background = '#F0F4F8'; e.currentTarget.style.borderColor = '#DCE0E6'; e.currentTarget.style.color = '#555E6C'; }}
                     >
                       {s}
@@ -298,8 +298,8 @@ export default function ChatPanel({ context }: Props) {
                       lineHeight: 1.6,
                       padding: '10px 12px',
                       borderRadius: isUser ? '12px 12px 4px 12px' : '12px 12px 12px 4px',
-                      background: isUser ? '#6331F4' : '#F0F4F8',
-                      color: isUser ? '#ffffff' : '#12101F',
+                      background: isUser ? '#1E3A8A' : '#F0F4F8',
+                      color: isUser ? '#ffffff' : '#0B1020',
                       wordBreak: 'break-word',
                     }}
                   >
@@ -318,14 +318,14 @@ export default function ChatPanel({ context }: Props) {
                     ) : (
                       <ReactMarkdown
                         components={{
-                          h1: ({ children }) => <p style={{ fontWeight: 700, fontSize: '13px', marginBottom: '6px', marginTop: '10px', color: '#12101F' }}>{children}</p>,
-                          h2: ({ children }) => <p style={{ fontWeight: 700, fontSize: '12px', marginBottom: '4px', marginTop: '10px', color: '#12101F' }}>{children}</p>,
+                          h1: ({ children }) => <p style={{ fontWeight: 700, fontSize: '13px', marginBottom: '6px', marginTop: '10px', color: '#0B1020' }}>{children}</p>,
+                          h2: ({ children }) => <p style={{ fontWeight: 700, fontSize: '12px', marginBottom: '4px', marginTop: '10px', color: '#0B1020' }}>{children}</p>,
                           h3: ({ children }) => <p style={{ fontWeight: 700, fontSize: '12px', marginBottom: '4px', marginTop: '8px', color: '#555E6C' }}>{children}</p>,
                           p:  ({ children }) => <p style={{ marginBottom: '6px', marginTop: 0 }}>{children}</p>,
                           ul: ({ children }) => <ul style={{ paddingLeft: '16px', marginBottom: '6px', marginTop: '2px' }}>{children}</ul>,
                           ol: ({ children }) => <ol style={{ paddingLeft: '16px', marginBottom: '6px', marginTop: '2px' }}>{children}</ol>,
                           li: ({ children }) => <li style={{ marginBottom: '3px' }}>{children}</li>,
-                          strong: ({ children }) => <strong style={{ fontWeight: 700, color: '#12101F' }}>{children}</strong>,
+                          strong: ({ children }) => <strong style={{ fontWeight: 700, color: '#0B1020' }}>{children}</strong>,
                           em: ({ children }) => <em style={{ fontStyle: 'italic' }}>{children}</em>,
                           hr: () => <hr style={{ border: 'none', borderTop: '1px solid #DCE0E6', margin: '8px 0' }} />,
                           code: ({ children }) => <code style={{ background: '#E8EDF3', borderRadius: '3px', padding: '1px 4px', fontSize: '11px', fontFamily: 'monospace' }}>{children}</code>,
@@ -371,7 +371,7 @@ export default function ChatPanel({ context }: Props) {
                   padding: '10px 12px',
                   border: '1px solid #DCE0E6',
                   borderRadius: '8px',
-                  color: '#12101F',
+                  color: '#0B1020',
                   background: '#ffffff',
                   maxHeight: '80px',
                   lineHeight: '1.5',
@@ -379,7 +379,7 @@ export default function ChatPanel({ context }: Props) {
                   outline: 'none',
                   opacity: loading ? 0.6 : 1,
                 }}
-                onFocus={(e) => (e.currentTarget.style.borderColor = '#6331F4')}
+                onFocus={(e) => (e.currentTarget.style.borderColor = '#1E3A8A')}
                 onBlur={(e) => (e.currentTarget.style.borderColor = '#DCE0E6')}
                 onInput={(e) => {
                   const el = e.currentTarget;
@@ -392,14 +392,14 @@ export default function ChatPanel({ context }: Props) {
                 disabled={!input.trim() || loading}
                 style={{
                   width: 36, height: 36, flexShrink: 0,
-                  borderRadius: '8px', background: '#6331F4', color: '#ffffff',
+                  borderRadius: '8px', background: '#1E3A8A', color: '#ffffff',
                   border: 'none', cursor: 'pointer', display: 'flex',
                   alignItems: 'center', justifyContent: 'center',
                   opacity: (!input.trim() || loading) ? 0.4 : 1,
                   transition: 'background 0.15s, opacity 0.15s',
                 }}
-                onMouseEnter={(e) => { if (!e.currentTarget.disabled) e.currentTarget.style.background = '#5436CE'; }}
-                onMouseLeave={(e) => (e.currentTarget.style.background = '#6331F4')}
+                onMouseEnter={(e) => { if (!e.currentTarget.disabled) e.currentTarget.style.background = '#16295E'; }}
+                onMouseLeave={(e) => (e.currentTarget.style.background = '#1E3A8A')}
               >
                 <IconSend />
               </button>

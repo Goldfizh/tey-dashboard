@@ -97,7 +97,7 @@ function SortTh({
   return (
     <th
       className={`px-4 py-3 text-xs font-bold uppercase tracking-wider whitespace-nowrap cursor-pointer select-none transition-colors ${align === 'right' ? 'text-right' : 'text-left'} ${className}`}
-      style={{ color: active ? '#6331F4' : '#8C9BAF' }}
+      style={{ color: active ? '#1E3A8A' : '#8C9BAF' }}
       onClick={() => onClick(sortKey)}
     >
       {label}
@@ -124,7 +124,7 @@ function DayRow({ r, objective }: { r: CampaignRow; objective: Objective }) {
     :                                                         (cpa  !== null ? fmtEur(cpa)  : '—');
 
   return (
-    <tr className="transition-colors hover:bg-purple-50/30" style={{ borderBottom: '1px solid #F8FAFC' }}>
+    <tr className="transition-colors hover:bg-blue-50/30" style={{ borderBottom: '1px solid #F8FAFC' }}>
       {/* Date */}
       <td className="pl-12 pr-4 py-2 text-xs tabular-nums whitespace-nowrap" style={{ color: '#8C9BAF' }}>
         {new Date(r.date + 'T00:00:00').toLocaleDateString('nl-NL', { day: 'numeric', month: 'short' })}
@@ -158,7 +158,7 @@ function DayRow({ r, objective }: { r: CampaignRow; objective: Objective }) {
         </>
       )}
       {/* Hero metric */}
-      <td className="px-4 py-2 text-xs tabular-nums text-right font-semibold whitespace-nowrap" style={{ color: '#12101F' }}>
+      <td className="px-4 py-2 text-xs tabular-nums text-right font-semibold whitespace-nowrap" style={{ color: '#0B1020' }}>
         {heroValue}
       </td>
       {/* Empty budget-share col */}
@@ -292,7 +292,7 @@ export default function CampaignRankTable({ rows, objective = 'conversies' }: Pr
         <span className="text-xs" style={{ color: '#BCC4CF' }}>·</span>
         <span className="text-xs" style={{ color: '#8C9BAF' }}>
           Gesorteerd op{' '}
-          <span className="font-semibold" style={{ color: '#6331F4' }}>
+          <span className="font-semibold" style={{ color: '#1E3A8A' }}>
             {sortKey === 'spend' ? 'budget' : sortKey.toUpperCase()}
           </span>
           {' '}{sortDir === 'desc' ? '(hoog → laag)' : '(laag → hoog)'}
@@ -394,9 +394,9 @@ export default function CampaignRankTable({ rows, objective = 'conversies' }: Pr
                       title={isExp ? 'Inklappen' : 'Dagelijkse uitwerking bekijken'}
                       className="flex items-center justify-center w-5 h-5 rounded transition-all"
                       style={{
-                        background: isExp ? '#6331F414' : '#F0F4F8',
-                        color: isExp ? '#6331F4' : '#8C9BAF',
-                        border: `1px solid ${isExp ? '#6331F4' : '#DCE0E6'}`,
+                        background: isExp ? '#1E3A8A14' : '#F0F4F8',
+                        color: isExp ? '#1E3A8A' : '#8C9BAF',
+                        border: `1px solid ${isExp ? '#1E3A8A' : '#DCE0E6'}`,
                         fontSize: '10px',
                       }}
                     >
@@ -405,7 +405,7 @@ export default function CampaignRankTable({ rows, objective = 'conversies' }: Pr
                   </td>
 
                   {/* Campaign name — wrap instead of truncate */}
-                  <td className="px-4 py-3 font-medium" style={{ color: '#12101F', maxWidth: '300px', wordBreak: 'break-word', whiteSpace: 'normal', lineHeight: '1.35' }}>
+                  <td className="px-4 py-3 font-medium" style={{ color: '#0B1020', maxWidth: '300px', wordBreak: 'break-word', whiteSpace: 'normal', lineHeight: '1.35' }}>
                     {c.campaign_name}
                   </td>
 
@@ -413,7 +413,7 @@ export default function CampaignRankTable({ rows, objective = 'conversies' }: Pr
                   <td className="px-4 py-3">
                     <span
                       className="inline-block px-2 py-0.5 text-xs font-bold whitespace-nowrap"
-                      style={{ background: color, borderRadius: '4px', color: c.platform === 'google' ? '#12101F' : '#ffffff' }}
+                      style={{ background: color, borderRadius: '4px', color: c.platform === 'google' ? '#0B1020' : '#ffffff' }}
                     >
                       {PLATFORM_LABEL[c.platform]}
                     </span>
@@ -464,7 +464,7 @@ export default function CampaignRankTable({ rows, objective = 'conversies' }: Pr
                   {/* Hero metric */}
                   <td
                     className="px-4 py-3 text-right tabular-nums font-bold whitespace-nowrap"
-                    style={{ color: isHeroTop && sortKey === heroSortKey ? '#16A34A' : '#12101F' }}
+                    style={{ color: isHeroTop && sortKey === heroSortKey ? '#16A34A' : '#0B1020' }}
                   >
                     {isHeroTop && sortKey === heroSortKey && (
                       <span className="mr-1 text-xs">✓</span>
@@ -497,7 +497,7 @@ export default function CampaignRankTable({ rows, objective = 'conversies' }: Pr
                         className="flex items-center gap-3 px-5 py-2.5"
                         style={{ borderBottom: '1px solid #EEF2F8', borderTop: '1px solid #E8EDFF' }}
                       >
-                        <span className="text-xs font-bold uppercase tracking-wider" style={{ color: '#6331F4' }}>
+                        <span className="text-xs font-bold uppercase tracking-wider" style={{ color: '#1E3A8A' }}>
                           📅 Dagelijkse uitsplitsing — {c.campaign_name}
                         </span>
                         <span className="text-xs ml-auto" style={{ color: '#BCC4CF' }}>
@@ -527,7 +527,7 @@ export default function CampaignRankTable({ rows, objective = 'conversies' }: Pr
                                   <th className="px-4 py-2 text-right text-xs font-semibold tracking-wider" style={{ color: '#8C9BAF' }}>CTR</th>
                                 </>
                               )}
-                              <th className="px-4 py-2 text-right text-xs font-semibold tracking-wider whitespace-nowrap" style={{ color: '#6331F4' }}>
+                              <th className="px-4 py-2 text-right text-xs font-semibold tracking-wider whitespace-nowrap" style={{ color: '#1E3A8A' }}>
                                 {heroLabel}
                               </th>
                               <th />
@@ -549,8 +549,8 @@ export default function CampaignRankTable({ rows, objective = 'conversies' }: Pr
                         <span className="text-sm shrink-0 mt-0.5">💡</span>
                         <p className="text-xs" style={{ color: '#8C9BAF', lineHeight: '1.5' }}>
                           <strong style={{ color: '#555E6C' }}>Advertentieset- en advertentieniveau</strong> — om resultaten per advertentieset, advertentie en plaatsing te bekijken is een extra tabblad in de Google Sheet nodig (bijv.{' '}
-                          <code className="px-1 py-0.5 rounded text-[10px]" style={{ background: '#E8EDF4', color: '#6331F4' }}>linkedin_adsets</code>,{' '}
-                          <code className="px-1 py-0.5 rounded text-[10px]" style={{ background: '#E8EDF4', color: '#6331F4' }}>meta_adsets</code>
+                          <code className="px-1 py-0.5 rounded text-[10px]" style={{ background: '#E8EDF4', color: '#1E3A8A' }}>linkedin_adsets</code>,{' '}
+                          <code className="px-1 py-0.5 rounded text-[10px]" style={{ background: '#E8EDF4', color: '#1E3A8A' }}>meta_adsets</code>
                           ) met de exports vanuit het advertentieplatform op dat niveau. Neem contact op met Goldfizh om dit toe te voegen.
                         </p>
                       </div>

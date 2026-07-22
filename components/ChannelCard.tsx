@@ -46,7 +46,7 @@ function Stat({ label, value }: { label: string; value: string }) {
   return (
     <div>
       <p className="text-xs text-[#8C9BAF] mb-0.5">{label}</p>
-      <p className="text-sm font-semibold text-[#12101F]">{value}</p>
+      <p className="text-sm font-semibold text-[#0B1020]">{value}</p>
     </div>
   );
 }
@@ -114,7 +114,7 @@ export default function ChannelCard({
       {/* Hero metric */}
       <div className="mb-6">
         <p className="text-xs text-[#8C9BAF] uppercase tracking-widest mb-1">{heroLabel}</p>
-        <p className="gf-display text-4xl font-light text-[#12101F] tabular-nums">{heroValue}</p>
+        <p className="gf-display text-4xl font-light text-[#0B1020] tabular-nums">{heroValue}</p>
       </div>
 
       {/* Supporting metrics grid */}

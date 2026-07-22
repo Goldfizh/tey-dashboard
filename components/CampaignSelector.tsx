@@ -74,7 +74,7 @@ export default function CampaignSelector({ rows, selected, onChange }: Props) {
           <button
             onClick={selectAll}
             className="text-xs font-semibold transition-colors"
-            style={{ color: allSelected ? '#BCC4CF' : '#6331F4' }}
+            style={{ color: allSelected ? '#BCC4CF' : '#1E3A8A' }}
           >
             Alles
           </button>
@@ -133,7 +133,7 @@ export default function CampaignSelector({ rows, selected, onChange }: Props) {
                     className="w-3.5 h-3.5 shrink-0"
                     style={{ accentColor: color }}
                   />
-                  <span className="text-xs leading-snug truncate" style={{ color: selected.has(c.name) ? '#12101F' : '#8C9BAF' }}>
+                  <span className="text-xs leading-snug truncate" style={{ color: selected.has(c.name) ? '#0B1020' : '#8C9BAF' }}>
                     {c.name}
                   </span>
                 </label>
@@ -146,11 +146,11 @@ export default function CampaignSelector({ rows, selected, onChange }: Props) {
       {/* Footer */}
       <div className="px-4 py-2.5 flex items-center justify-between" style={{ borderTop: '1px solid #DCE0E6' }}>
         <span className="text-xs" style={{ color: '#8C9BAF' }}>
-          <span className="font-semibold" style={{ color: '#12101F' }}>{selectedCount}</span>
+          <span className="font-semibold" style={{ color: '#0B1020' }}>{selectedCount}</span>
           {' '}/ {campaigns.length} geselecteerd
         </span>
         {selectedCount < campaigns.length && selectedCount > 0 && (
-          <span className="text-xs font-semibold" style={{ color: '#6331F4' }}>
+          <span className="text-xs font-semibold" style={{ color: '#1E3A8A' }}>
             gefilterd
           </span>
         )}

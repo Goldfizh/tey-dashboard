@@ -172,7 +172,7 @@ export default function MetaSection({ dateFrom, dateTo }: Props) {
                 lineKey="cpa"
                 barLabel="Conversies"
                 lineLabel="CPA"
-                barColor="#7C3AED"
+                barColor="#2563EB"
                 lineColor="#9ca3af"
                 barFormat={fmtNum}
                 lineFormat={fmtEur}
@@ -186,7 +186,7 @@ export default function MetaSection({ dateFrom, dateTo }: Props) {
                 lineKey="cpc"
                 barLabel="Clicks"
                 lineLabel="CPC"
-                barColor="#7C3AED"
+                barColor="#2563EB"
                 lineColor="#9ca3af"
                 barFormat={fmtNum}
                 lineFormat={fmtEur}
@@ -197,7 +197,7 @@ export default function MetaSection({ dateFrom, dateTo }: Props) {
                 data={daily as unknown as Record<string, unknown>[]}
                 xKey="date"
                 valueKey="spend"
-                color="#7C3AED"
+                color="#2563EB"
                 format={fmtEur}
                 xAngle={-45}
               />
@@ -218,7 +218,7 @@ export default function MetaSection({ dateFrom, dateTo }: Props) {
                 data={byAudience as unknown as Record<string, unknown>[]}
                 xKey="campaign_name"
                 valueKey="cpa"
-                color="#7C3AED"
+                color="#2563EB"
                 format={fmtEur}
                 showLabels
                 xAngle={-45}
@@ -238,7 +238,7 @@ export default function MetaSection({ dateFrom, dateTo }: Props) {
                 data={byAd as unknown as Record<string, unknown>[]}
                 xKey="ad_name"
                 valueKey="cpa"
-                color="#7C3AED"
+                color="#2563EB"
                 format={fmtEur}
                 showLabels
                 xAngle={-45}
@@ -258,7 +258,7 @@ export default function MetaSection({ dateFrom, dateTo }: Props) {
                 data={byAd as unknown as Record<string, unknown>[]}
                 xKey="ad_name"
                 valueKey="cpc"
-                color="#7C3AED"
+                color="#2563EB"
                 format={fmtEur}
                 showLabels
                 xAngle={-45}

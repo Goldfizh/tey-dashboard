@@ -20,7 +20,7 @@ const PLATFORM_COLOR: Record<Platform, string> = {
 };
 
 // Distinct line colours when multiple campaigns are shown.
-const PALETTE = ['#6331F4', '#0077B5', '#1877F2', '#F59E0B', '#16A34A', '#DC2626', '#9333EA', '#0EA5E9', '#F472B6', '#10B981'];
+const PALETTE = ['#1E3A8A', '#0077B5', '#1877F2', '#F59E0B', '#16A34A', '#DC2626', '#0EA5E9', '#0EA5E9', '#F472B6', '#10B981'];
 
 const fmtEur = (n: number) =>
   n.toLocaleString('nl-NL', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 });
@@ -113,7 +113,7 @@ export default function DailyDeliveryChart({ filteredRows }: Props) {
     const actuals = payload.filter((p) => p.dataKey.startsWith('v_'));
     return (
       <div className="bg-white border rounded-lg shadow-lg p-3 text-xs space-y-1.5 min-w-[220px]" style={{ borderColor: '#DCE0E6' }}>
-        <p className="font-semibold mb-1" style={{ color: '#12101F' }}>
+        <p className="font-semibold mb-1" style={{ color: '#0B1020' }}>
           {new Date(String(label) + 'T00:00:00').toLocaleDateString('nl-NL', { day: 'numeric', month: 'short', year: '2-digit' })}
         </p>
         {actuals.map((p) => {
@@ -124,7 +124,7 @@ export default function DailyDeliveryChart({ filteredRows }: Props) {
                 <span className="inline-block w-2 h-2 rounded-full shrink-0" style={{ background: p.color }} />
                 <span className="truncate" title={name}>{name}</span>
               </span>
-              <span className="tabular-nums font-semibold whitespace-nowrap" style={{ color: '#12101F' }}>
+              <span className="tabular-nums font-semibold whitespace-nowrap" style={{ color: '#0B1020' }}>
                 {fmt(p.value)}
               </span>
             </div>
@@ -150,9 +150,9 @@ export default function DailyDeliveryChart({ filteredRows }: Props) {
                   className="text-xs font-semibold px-3 py-1.5 transition-all"
                   style={{
                     borderRadius: '4px',
-                    background: active ? '#6331F4' : '#ffffff',
+                    background: active ? '#1E3A8A' : '#ffffff',
                     color:      active ? '#ffffff' : '#555E6C',
-                    border:     `1px solid ${active ? '#6331F4' : '#DCE0E6'}`,
+                    border:     `1px solid ${active ? '#1E3A8A' : '#DCE0E6'}`,
                   }}
                 >
                   {m === 'spend' ? 'Spend' : m === 'impressions' ? 'Impressies' : m === 'clicks' ? 'Klikken' : 'Conversies'}
@@ -169,7 +169,7 @@ export default function DailyDeliveryChart({ filteredRows }: Props) {
               <button
                 onClick={() => setPicked(new Set(campaigns.slice(0, 3).map((c) => c.name)))}
                 className="font-semibold transition-colors"
-                style={{ color: '#6331F4' }}
+                style={{ color: '#1E3A8A' }}
               >
                 Top 3
               </button>
@@ -177,7 +177,7 @@ export default function DailyDeliveryChart({ filteredRows }: Props) {
               <button
                 onClick={() => setPicked(new Set(campaigns.map((c) => c.name)))}
                 className="font-semibold transition-colors"
-                style={{ color: '#6331F4' }}
+                style={{ color: '#1E3A8A' }}
               >
                 Alle
               </button>

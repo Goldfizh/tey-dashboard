@@ -79,7 +79,7 @@ function PlatformBlock({ platform, campaigns, selected, onChange, running }: Pla
         <div style={{ display: 'flex', gap: '8px' }}>
           <button
             onClick={selectAll}
-            style={{ fontSize: '11px', fontWeight: 600, color: allSelected ? '#BCC4CF' : '#6331F4', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+            style={{ fontSize: '11px', fontWeight: 600, color: allSelected ? '#BCC4CF' : '#1E3A8A', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
           >Alles</button>
           <span style={{ color: '#DCE0E6', fontSize: '11px' }}>|</span>
           <button
@@ -102,13 +102,13 @@ function PlatformBlock({ platform, campaigns, selected, onChange, running }: Pla
             padding: '5px 8px',
             border: '1px solid #DCE0E6',
             borderRadius: '5px',
-            color: '#12101F',
+            color: '#0B1020',
             background: '#F8FAFC',
             marginBottom: '6px',
             boxSizing: 'border-box',
             outline: 'none',
           }}
-          onFocus={(e) => (e.currentTarget.style.borderColor = '#6331F4')}
+          onFocus={(e) => (e.currentTarget.style.borderColor = '#1E3A8A')}
           onBlur={(e)  => (e.currentTarget.style.borderColor = '#DCE0E6')}
         />
       )}
@@ -130,7 +130,7 @@ function PlatformBlock({ platform, campaigns, selected, onChange, running }: Pla
                 onChange={() => toggle(name)}
                 style={{ marginTop: '2px', width: '13px', height: '13px', flexShrink: 0, accentColor: color, cursor: 'pointer' }}
               />
-              <span style={{ fontSize: '11px', lineHeight: 1.4, color: checked ? '#12101F' : '#8C9BAF', wordBreak: 'break-word', flex: 1 }}>
+              <span style={{ fontSize: '11px', lineHeight: 1.4, color: checked ? '#0B1020' : '#8C9BAF', wordBreak: 'break-word', flex: 1 }}>
                 {name}
               </span>
               {running.has(name) && (
@@ -240,7 +240,7 @@ export default function CampaignSidebar({
             {/* Auto-detected badge */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px', padding: '6px 8px', background: '#F0F4F8', borderRadius: '6px' }}>
               <span style={{ fontSize: '10px', color: '#8C9BAF' }}>Auto:</span>
-              <span style={{ fontSize: '11px', fontWeight: 600, color: '#6331F4' }}>
+              <span style={{ fontSize: '11px', fontWeight: 600, color: '#1E3A8A' }}>
                 {OBJECTIVE_LABELS[autoObjective]}
               </span>
               {manualObjective && (
@@ -269,8 +269,8 @@ export default function CampaignSidebar({
                       gap: '7px',
                       padding: '5px 8px',
                       borderRadius: '6px',
-                      border: `1px solid ${active ? '#6331F4' : 'transparent'}`,
-                      background: active ? '#6331F414' : 'transparent',
+                      border: `1px solid ${active ? '#1E3A8A' : 'transparent'}`,
+                      background: active ? '#1E3A8A14' : 'transparent',
                       cursor: 'pointer',
                       textAlign: 'left',
                       transition: 'all 0.1s',
@@ -279,11 +279,11 @@ export default function CampaignSidebar({
                     onMouseLeave={(e) => { if (!active) e.currentTarget.style.background = 'transparent'; }}
                   >
                     <span style={{ fontSize: '12px' }}>{icon}</span>
-                    <span style={{ fontSize: '11px', fontWeight: active ? 700 : 500, color: active ? '#6331F4' : '#555E6C' }}>
+                    <span style={{ fontSize: '11px', fontWeight: active ? 700 : 500, color: active ? '#1E3A8A' : '#555E6C' }}>
                       {label}
                     </span>
                     {isManual && (
-                      <span style={{ marginLeft: 'auto', fontSize: '10px', background: '#6331F4', color: '#fff', borderRadius: '3px', padding: '1px 4px' }}>
+                      <span style={{ marginLeft: 'auto', fontSize: '10px', background: '#1E3A8A', color: '#fff', borderRadius: '3px', padding: '1px 4px' }}>
                         handmatig
                       </span>
                     )}

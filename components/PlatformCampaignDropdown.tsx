@@ -93,7 +93,7 @@ export default function PlatformCampaignDropdown({ platform, campaigns, selected
           className="px-1.5 py-0.5 rounded text-xs font-bold"
           style={{
             background: isFiltered ? color : '#F0F4F8',
-            color:      isFiltered ? (platform === 'google' ? '#12101F' : '#ffffff') : '#8C9BAF',
+            color:      isFiltered ? (platform === 'google' ? '#0B1020' : '#ffffff') : '#8C9BAF',
           }}
         >
           {allSelected ? 'Alle' : noneSelected ? 'Geen' : `${selectedCount}/${campaigns.length}`}
@@ -120,7 +120,7 @@ export default function PlatformCampaignDropdown({ platform, campaigns, selected
           <div className="flex items-center justify-between px-3 py-2.5" style={{ borderBottom: '1px solid #DCE0E6' }}>
             <span className="text-xs font-bold uppercase tracking-widest" style={{ color }}>{label}</span>
             <div className="flex gap-3">
-              <button onClick={selectAll}   className="text-xs font-semibold" style={{ color: allSelected  ? '#BCC4CF' : '#6331F4' }}>Alles</button>
+              <button onClick={selectAll}   className="text-xs font-semibold" style={{ color: allSelected  ? '#BCC4CF' : '#1E3A8A' }}>Alles</button>
               <span style={{ color: '#DCE0E6' }}>|</span>
               <button onClick={deselectAll} className="text-xs font-semibold" style={{ color: noneSelected ? '#BCC4CF' : '#555E6C' }}>Geen</button>
             </div>
@@ -137,9 +137,9 @@ export default function PlatformCampaignDropdown({ platform, campaigns, selected
               className="w-full text-xs px-2.5 py-1.5 focus:outline-none"
               style={{
                 border: '1px solid #DCE0E6', borderRadius: '5px',
-                color: '#12101F', background: '#F8FAFC',
+                color: '#0B1020', background: '#F8FAFC',
               }}
-              onFocus={(e) => (e.currentTarget.style.borderColor = '#6331F4')}
+              onFocus={(e) => (e.currentTarget.style.borderColor = '#1E3A8A')}
               onBlur={(e)  => (e.currentTarget.style.borderColor = '#DCE0E6')}
             />
           </div>
@@ -165,7 +165,7 @@ export default function PlatformCampaignDropdown({ platform, campaigns, selected
                       className="mt-0.5 w-3.5 h-3.5 shrink-0"
                       style={{ accentColor: color }}
                     />
-                    <span className="text-xs leading-snug" style={{ color: checked ? '#12101F' : '#8C9BAF' }}>
+                    <span className="text-xs leading-snug" style={{ color: checked ? '#0B1020' : '#8C9BAF' }}>
                       {name}
                     </span>
                   </label>
@@ -177,7 +177,7 @@ export default function PlatformCampaignDropdown({ platform, campaigns, selected
           {/* Footer */}
           <div className="px-3 py-2.5" style={{ borderTop: '1px solid #DCE0E6' }}>
             <span className="text-xs" style={{ color: '#8C9BAF' }}>
-              <span className="font-semibold" style={{ color: '#12101F' }}>{selectedCount}</span>
+              <span className="font-semibold" style={{ color: '#0B1020' }}>{selectedCount}</span>
               {' '}/ {campaigns.length} geselecteerd
               {search.trim() && ` · ${filtered.length} gevonden`}
             </span>

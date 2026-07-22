@@ -4,22 +4,22 @@
   --font-sans: var(--font-epilogue);
   --font-mono: var(--font-mono);
   --color-background: #ffffff;
-  --color-foreground: #12101F;
+  --color-foreground: #0B1020;
 }
 
 /* ─────────────────────────────────────────────────────────────
    Goldfizh brand tokens
-   Primary accent: #6331F4 (purple)
-   Near-black:     #12101F (warm, purple-tinted)
+   Primary accent: #1E3A8A (dark blue)
+   Near-black:     #0B1020 (cool, blue-tinted)
    ───────────────────────────────────────────────────────────── */
 :root {
-  --gf-purple-100:  #E2DBFF;
-  --gf-purple-300:  #A38DFB;
-  --gf-purple-600:  #6331F4;   /* ★ primary brand purple */
-  --gf-purple-700:  #5436CE;
-  --gf-purple-900:  #12101F;   /* near-black with purple tint */
+  --gf-purple-100:  #DCE3FA;
+  --gf-purple-300:  #5C7CBF;
+  --gf-purple-600:  #1E3A8A;   /* ★ primary brand dark blue */
+  --gf-purple-700:  #16295E;
+  --gf-purple-900:  #0B1020;   /* near-black with blue tint */
 
-  --gf-ink:         #12101F;
+  --gf-ink:         #0B1020;
   --gf-ink-soft:    #22222D;
   --gf-slate-700:   #555E6C;
   --gf-slate-500:   #8C9BAF;
@@ -30,7 +30,7 @@
 
   --gf-shadow-sm:   0 1px 2px rgba(18, 16, 34, 0.06);
   --gf-shadow-md:   0 8px 24px rgba(18, 16, 34, 0.08);
-  --gf-glow-purple: 0 20px 60px -10px rgba(99, 49, 244, 0.35);
+  --gf-glow-purple: 0 20px 60px -10px rgba(30, 58, 138, 0.35);
 
   --gf-radius-sm:   4px;
   --gf-radius-md:   8px;
@@ -53,7 +53,7 @@ body {
   text-rendering: optimizeLegibility;
 }
 
-/* ── Eyebrow: 8×8 purple square before section labels ── */
+/* ── Eyebrow: 8×8 blue square before section labels ── */
 .gf-eyebrow {
   display: inline-flex;
   align-items: center;
@@ -81,7 +81,7 @@ body {
   line-height: 1.1;
 }
 
-/* ── Purple period after section title ── */
+/* ── Blue period after section title ── */
 .gf-stop::after {
   content: ".";
   color: var(--gf-purple-600);

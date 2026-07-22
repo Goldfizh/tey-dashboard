@@ -619,7 +619,7 @@ export default function DashboardPage() {
                   className="relative h-16 px-6 text-sm transition-colors"
                   style={{
                     fontWeight: active ? 700 : 500,
-                    color: active ? '#12101F' : '#8C9BAF',
+                    color: active ? '#0B1020' : '#8C9BAF',
                     letterSpacing: '-0.01em',
                   }}
                   onMouseEnter={(e) => { if (!active) e.currentTarget.style.color = '#555E6C'; }}
@@ -629,7 +629,7 @@ export default function DashboardPage() {
                   {active && (
                     <span
                       className="absolute bottom-0 left-4 right-4"
-                      style={{ height: '2px', background: '#6331F4', borderRadius: '2px 2px 0 0' }}
+                      style={{ height: '2px', background: '#1E3A8A', borderRadius: '2px 2px 0 0' }}
                     />
                   )}
                 </button>
@@ -643,9 +643,9 @@ export default function DashboardPage() {
               onClick={fetchData}
               disabled={loading}
               className="text-sm font-semibold disabled:opacity-40 transition-colors px-5 py-2 rounded-lg"
-              style={{ background: '#6331F4', color: '#ffffff' }}
-              onMouseEnter={(e) => (e.currentTarget.style.background = '#5436CE')}
-              onMouseLeave={(e) => (e.currentTarget.style.background = '#6331F4')}
+              style={{ background: '#1E3A8A', color: '#ffffff' }}
+              onMouseEnter={(e) => (e.currentTarget.style.background = '#16295E')}
+              onMouseLeave={(e) => (e.currentTarget.style.background = '#1E3A8A')}
             >
               {loading ? 'Laden…' : '↺ Vernieuwen'}
             </button>
@@ -671,9 +671,9 @@ export default function DashboardPage() {
                     className="text-xs font-semibold px-3 py-1.5 transition-all"
                     style={{
                       borderRadius: '4px',
-                      background: active ? '#6331F4' : '#ffffff',
+                      background: active ? '#1E3A8A' : '#ffffff',
                       color:      active ? '#ffffff' : '#555E6C',
-                      border:     `1px solid ${active ? '#6331F4' : '#DCE0E6'}`,
+                      border:     `1px solid ${active ? '#1E3A8A' : '#DCE0E6'}`,
                     }}
                   >
                     {label}
@@ -687,16 +687,16 @@ export default function DashboardPage() {
                     type="date"
                     value={customFrom}
                     onChange={(e) => setCustomFrom(e.target.value)}
-                    className="text-xs px-2.5 py-1.5 focus:outline-none focus:ring-2 focus:ring-[#6331F4]"
-                    style={{ border: '1px solid #DCE0E6', borderRadius: '4px', color: '#12101F' }}
+                    className="text-xs px-2.5 py-1.5 focus:outline-none focus:ring-2 focus:ring-[#1E3A8A]"
+                    style={{ border: '1px solid #DCE0E6', borderRadius: '4px', color: '#0B1020' }}
                   />
                   <span className="text-xs" style={{ color: '#8C9BAF' }}>t/m</span>
                   <input
                     type="date"
                     value={customTo}
                     onChange={(e) => setCustomTo(e.target.value)}
-                    className="text-xs px-2.5 py-1.5 focus:outline-none focus:ring-2 focus:ring-[#6331F4]"
-                    style={{ border: '1px solid #DCE0E6', borderRadius: '4px', color: '#12101F' }}
+                    className="text-xs px-2.5 py-1.5 focus:outline-none focus:ring-2 focus:ring-[#1E3A8A]"
+                    style={{ border: '1px solid #DCE0E6', borderRadius: '4px', color: '#0B1020' }}
                   />
                 </div>
               )}
@@ -716,9 +716,9 @@ export default function DashboardPage() {
               className="text-xs font-semibold px-3 py-1.5 transition-all"
               style={{
                 borderRadius: '4px',
-                background: compareEnabled ? '#6331F414' : '#ffffff',
-                color:      compareEnabled ? '#6331F4'   : '#555E6C',
-                border:     `1px solid ${compareEnabled ? '#6331F4' : '#DCE0E6'}`,
+                background: compareEnabled ? '#1E3A8A14' : '#ffffff',
+                color:      compareEnabled ? '#1E3A8A'   : '#555E6C',
+                border:     `1px solid ${compareEnabled ? '#1E3A8A' : '#DCE0E6'}`,
               }}
             >
               ↔ Vergelijk
@@ -761,7 +761,7 @@ export default function DashboardPage() {
                   onClick={() => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
                   className="text-xs font-semibold px-2.5 py-1 whitespace-nowrap transition-colors"
                   style={{ borderRadius: '4px', background: '#F0F4F8', color: '#555E6C' }}
-                  onMouseEnter={(e) => { e.currentTarget.style.background = '#6331F414'; e.currentTarget.style.color = '#6331F4'; }}
+                  onMouseEnter={(e) => { e.currentTarget.style.background = '#1E3A8A14'; e.currentTarget.style.color = '#1E3A8A'; }}
                   onMouseLeave={(e) => { e.currentTarget.style.background = '#F0F4F8'; e.currentTarget.style.color = '#555E6C'; }}
                 >
                   {label}
@@ -973,7 +973,7 @@ export default function DashboardPage() {
                               {([li, me, go] as string[]).map((val, i) => {
                                 const raw = [liR, meR, goR][i] as number;
                                 return (
-                                  <td key={i} className="py-3 px-4 text-sm tabular-nums font-semibold" style={{ color: win(raw) ? '#16A34A' : '#12101F' }}>
+                                  <td key={i} className="py-3 px-4 text-sm tabular-nums font-semibold" style={{ color: win(raw) ? '#16A34A' : '#0B1020' }}>
                                     {win(raw) && <span className="mr-1" style={{ color: '#16A34A' }}>✓</span>}
                                     {val}
                                   </td>

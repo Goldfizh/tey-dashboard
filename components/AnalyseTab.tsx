@@ -134,9 +134,9 @@ function CampaignPicker({
           className="w-full text-sm px-3 py-2 pr-8 focus:outline-none transition-colors"
           style={{
             border: '1.5px solid #DCE0E6', borderRadius: '8px',
-            color: '#12101F', background: '#F8FAFC',
+            color: '#0B1020', background: '#F8FAFC',
           }}
-          onFocus={(e) => (e.currentTarget.style.borderColor = '#6331F4')}
+          onFocus={(e) => (e.currentTarget.style.borderColor = '#1E3A8A')}
           onBlur={(e)  => (e.currentTarget.style.borderColor = '#DCE0E6')}
         />
         {query && (
@@ -151,10 +151,10 @@ function CampaignPicker({
       {allCampaigns.length > 0 && (
         <div className="flex items-center justify-between mb-2">
           <span className="text-xs" style={{ color: '#8C9BAF' }}>
-            <span className="font-semibold" style={{ color: '#12101F' }}>{selectedCount}</span> geselecteerd
+            <span className="font-semibold" style={{ color: '#0B1020' }}>{selectedCount}</span> geselecteerd
           </span>
           <div className="flex gap-3">
-            <button onClick={selectAll}  className="text-xs font-semibold" style={{ color: available.length === 0 ? '#BCC4CF' : '#6331F4' }}>Alles</button>
+            <button onClick={selectAll}  className="text-xs font-semibold" style={{ color: available.length === 0 ? '#BCC4CF' : '#1E3A8A' }}>Alles</button>
             <span style={{ color: '#DCE0E6', fontSize: 12 }}>|</span>
             <button onClick={clearAll}   className="text-xs font-semibold" style={{ color: selectedCount === 0 ? '#BCC4CF' : '#555E6C' }}>Geen</button>
           </div>
@@ -185,14 +185,14 @@ function CampaignPicker({
                   style={{ width: 14, height: 14, accentColor: PLATFORM_COLOR[c.platform] }}
                 />
                 <div className="min-w-0">
-                  <p className="text-xs leading-snug" style={{ color: checked ? '#12101F' : '#555E6C', wordBreak: 'break-word' }}>
+                  <p className="text-xs leading-snug" style={{ color: checked ? '#0B1020' : '#555E6C', wordBreak: 'break-word' }}>
                     {c.name}
                   </p>
                   <span
                     className="inline-block text-[10px] font-bold px-1.5 py-0.5 rounded mt-0.5"
                     style={{
                       background: PLATFORM_COLOR[c.platform],
-                      color: c.platform === 'google' ? '#12101F' : '#fff',
+                      color: c.platform === 'google' ? '#0B1020' : '#fff',
                     }}
                   >
                     {PLATFORM_LABEL[c.platform]}
@@ -230,7 +230,7 @@ function MetricCompareRow({ row }: { row: MetricRow }) {
   return (
     <tr style={{ borderBottom: '1px solid #F0F4F8' }} className="last:border-0">
       <td className="px-5 py-3.5 text-xs font-medium" style={{ color: '#555E6C' }}>{row.label}</td>
-      <td className="px-5 py-3.5 text-sm font-bold tabular-nums" style={{ color: '#12101F' }}>{row.focusValue}</td>
+      <td className="px-5 py-3.5 text-sm font-bold tabular-nums" style={{ color: '#0B1020' }}>{row.focusValue}</td>
       <td className="px-5 py-3.5 text-sm tabular-nums" style={{ color: '#8C9BAF' }}>
         {row.benchValue ?? <span style={{ color: '#DCE0E6' }}>—</span>}
       </td>
@@ -606,9 +606,9 @@ Gebruik geen bulletpoints — schrijf lopende tekst in 2-3 alinea's.`;
                   className="text-xs font-semibold px-2.5 py-1 transition-all"
                   style={{
                     borderRadius: '4px',
-                    background: preset === key ? '#6331F4' : '#F0F4F8',
+                    background: preset === key ? '#1E3A8A' : '#F0F4F8',
                     color:      preset === key ? '#fff'    : '#555E6C',
-                    border:     `1px solid ${preset === key ? '#6331F4' : 'transparent'}`,
+                    border:     `1px solid ${preset === key ? '#1E3A8A' : 'transparent'}`,
                   }}
                 >
                   {label}
@@ -668,16 +668,16 @@ Gebruik geen bulletpoints — schrijf lopende tekst in 2-3 alinea's.`;
                   className="flex items-center gap-2 px-3 py-2 text-left transition-all"
                   style={{
                     borderRadius: '6px',
-                    border:      `1px solid ${benchmarkType === key ? '#6331F4' : 'transparent'}`,
-                    background:  benchmarkType === key ? '#6331F414' : 'transparent',
-                    color:       benchmarkType === key ? '#6331F4'   : '#555E6C',
+                    border:      `1px solid ${benchmarkType === key ? '#1E3A8A' : 'transparent'}`,
+                    background:  benchmarkType === key ? '#1E3A8A14' : 'transparent',
+                    color:       benchmarkType === key ? '#1E3A8A'   : '#555E6C',
                   }}
                   onMouseEnter={(e) => { if (benchmarkType !== key) e.currentTarget.style.background = '#F0F4F8'; }}
                   onMouseLeave={(e) => { if (benchmarkType !== key) e.currentTarget.style.background = 'transparent'; }}
                 >
                   <span className="text-sm">{icon}</span>
                   <span className="text-xs font-semibold">{label}</span>
-                  {benchmarkType === key && <span className="ml-auto text-[10px] bg-[#6331F4] text-white rounded px-1 py-0.5">actief</span>}
+                  {benchmarkType === key && <span className="ml-auto text-[10px] bg-[#1E3A8A] text-white rounded px-1 py-0.5">actief</span>}
                 </button>
               ))}
             </div>
@@ -706,7 +706,7 @@ Gebruik geen bulletpoints — schrijf lopende tekst in 2-3 alinea's.`;
             {/* Auto-detected */}
             <div className="flex items-center gap-2 mb-2 px-2 py-1.5 rounded-md" style={{ background: '#F0F4F8' }}>
               <span className="text-[10px]" style={{ color: '#8C9BAF' }}>Auto:</span>
-              <span className="text-xs font-semibold" style={{ color: '#6331F4' }}>
+              <span className="text-xs font-semibold" style={{ color: '#1E3A8A' }}>
                 {OBJECTIVE_LABELS[autoObjective]}
               </span>
               {manualObjective && (
@@ -724,15 +724,15 @@ Gebruik geen bulletpoints — schrijf lopende tekst in 2-3 alinea's.`;
                     className="flex items-center gap-2 px-2 py-1.5 text-left transition-all"
                     style={{
                       borderRadius: '5px',
-                      border:      `1px solid ${active ? '#6331F4' : 'transparent'}`,
-                      background:  active ? '#6331F410' : 'transparent',
+                      border:      `1px solid ${active ? '#1E3A8A' : 'transparent'}`,
+                      background:  active ? '#1E3A8A10' : 'transparent',
                     }}
                     onMouseEnter={(e) => { if (!active) e.currentTarget.style.background = '#F0F4F8'; }}
                     onMouseLeave={(e) => { if (!active) e.currentTarget.style.background = 'transparent'; }}
                   >
                     <span className="text-xs">{icon}</span>
-                    <span className="text-xs font-medium" style={{ color: active ? '#6331F4' : '#555E6C' }}>{label}</span>
-                    {isManual && <span className="ml-auto text-[10px] bg-[#6331F4] text-white rounded px-1">handmatig</span>}
+                    <span className="text-xs font-medium" style={{ color: active ? '#1E3A8A' : '#555E6C' }}>{label}</span>
+                    {isManual && <span className="ml-auto text-[10px] bg-[#1E3A8A] text-white rounded px-1">handmatig</span>}
                   </button>
                 );
               })}
@@ -752,7 +752,7 @@ Gebruik geen bulletpoints — schrijf lopende tekst in 2-3 alinea's.`;
             style={{ border: '1px solid #DCE0E6', borderRadius: '10px', boxShadow: '0 4px 16px rgba(18,16,34,0.06)' }}
           >
             <span className="text-5xl mb-4">📊</span>
-            <p className="text-lg font-semibold mb-1" style={{ color: '#12101F' }}>Kies je focuscampagnes</p>
+            <p className="text-lg font-semibold mb-1" style={{ color: '#0B1020' }}>Kies je focuscampagnes</p>
             <p className="text-sm max-w-sm" style={{ color: '#8C9BAF' }}>
               Selecteer een of meer campagnes in het linkerpaneel om de resultaten te bekijken en te vergelijken met een benchmark.
             </p>
@@ -766,7 +766,7 @@ Gebruik geen bulletpoints — schrijf lopende tekst in 2-3 alinea's.`;
             style={{ border: '1px solid #DCE0E6', borderRadius: '10px' }}
           >
             <span className="text-4xl mb-3">🔍</span>
-            <p className="text-sm font-semibold mb-1" style={{ color: '#12101F' }}>Geen data in deze periode</p>
+            <p className="text-sm font-semibold mb-1" style={{ color: '#0B1020' }}>Geen data in deze periode</p>
             <p className="text-xs" style={{ color: '#8C9BAF' }}>
               De geselecteerde campagnes hebben geen data in {dateFrom} – {dateTo}. Probeer een andere periode.
             </p>
@@ -782,9 +782,9 @@ Gebruik geen bulletpoints — schrijf lopende tekst in 2-3 alinea's.`;
               style={{ border: '1px solid #DCE0E6', borderRadius: '10px', boxShadow: '0 4px 16px rgba(18,16,34,0.06)' }}
             >
               <div>
-                <p className="text-xs font-bold uppercase tracking-widest mb-1" style={{ color: '#6331F4' }}>
+                <p className="text-xs font-bold uppercase tracking-widest mb-1" style={{ color: '#1E3A8A' }}>
                   {OBJECTIVE_LABELS[objective]} · {focusCampaigns.size} campagne{focusCampaigns.size !== 1 ? 's' : ''}
-                  {manualObjective && <span className="ml-2 text-[10px] bg-purple-100 text-purple-600 rounded px-1.5 py-0.5">handmatig</span>}
+                  {manualObjective && <span className="ml-2 text-[10px] bg-blue-100 text-blue-800 rounded px-1.5 py-0.5">handmatig</span>}
                 </p>
                 <div className="flex flex-wrap gap-2">
                   {[...focusCampaigns].map((name) => {
@@ -824,7 +824,7 @@ Gebruik geen bulletpoints — schrijf lopende tekst in 2-3 alinea's.`;
                 <thead style={{ background: '#F0F4F8', borderBottom: '1px solid #DCE0E6' }}>
                   <tr>
                     <th className="px-5 py-3 text-left text-xs font-bold uppercase tracking-wider" style={{ color: '#8C9BAF' }}>Metric</th>
-                    <th className="px-5 py-3 text-left text-xs font-bold uppercase tracking-wider" style={{ color: '#6331F4' }}>Focus</th>
+                    <th className="px-5 py-3 text-left text-xs font-bold uppercase tracking-wider" style={{ color: '#1E3A8A' }}>Focus</th>
                     <th className="px-5 py-3 text-left text-xs font-bold uppercase tracking-wider" style={{ color: '#8C9BAF' }}>
                       {hasBench ? benchmarkLabel ?? 'Benchmark' : 'Benchmark'}
                     </th>
@@ -859,9 +859,9 @@ Gebruik geen bulletpoints — schrijf lopende tekst in 2-3 alinea's.`;
                   onClick={generateSummary}
                   disabled={aiLoading}
                   className="flex items-center gap-2 text-xs font-semibold px-4 py-2 rounded-lg transition-all disabled:opacity-50"
-                  style={{ background: '#6331F4', color: '#fff' }}
-                  onMouseEnter={(e) => { if (!aiLoading) e.currentTarget.style.background = '#5436CE'; }}
-                  onMouseLeave={(e) => { if (!aiLoading) e.currentTarget.style.background = '#6331F4'; }}
+                  style={{ background: '#1E3A8A', color: '#fff' }}
+                  onMouseEnter={(e) => { if (!aiLoading) e.currentTarget.style.background = '#16295E'; }}
+                  onMouseLeave={(e) => { if (!aiLoading) e.currentTarget.style.background = '#1E3A8A'; }}
                 >
                   {aiLoading ? (
                     <>
@@ -884,10 +884,10 @@ Gebruik geen bulletpoints — schrijf lopende tekst in 2-3 alinea's.`;
               )}
 
               {(aiText || aiLoading) && (
-                <div className="prose prose-sm max-w-none" style={{ color: '#12101F', lineHeight: '1.7' }}>
+                <div className="prose prose-sm max-w-none" style={{ color: '#0B1020', lineHeight: '1.7' }}>
                   <ReactMarkdown>{aiText || '…'}</ReactMarkdown>
                   {aiLoading && (
-                    <span className="inline-block w-1.5 h-4 ml-0.5 align-middle animate-pulse rounded-sm" style={{ background: '#6331F4' }} />
+                    <span className="inline-block w-1.5 h-4 ml-0.5 align-middle animate-pulse rounded-sm" style={{ background: '#1E3A8A' }} />
                   )}
                 </div>
               )}

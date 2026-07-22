@@ -43,7 +43,7 @@ export default function KpiCard({ title, value, subtitle, accent, delta, deltaIn
       }}
     >
       <p className="gf-eyebrow mb-2">{title}</p>
-      <p className="gf-display text-[2rem] font-light text-[#12101F] tabular-nums">{value}</p>
+      <p className="gf-display text-[2rem] font-light text-[#0B1020] tabular-nums">{value}</p>
       <div className="flex items-center gap-2 mt-1.5">
         {subtitle && <p className="text-xs text-[#8C9BAF]">{subtitle}</p>}
         {delta != null && <DeltaBadge delta={delta} inverted={deltaInverted} />}

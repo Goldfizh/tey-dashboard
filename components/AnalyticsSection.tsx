@@ -28,7 +28,7 @@ const CHANNEL_CONFIG: Record<string, { label: string; color: string }> = {
   'Paid Search':    { label: 'Betaald zoeken',   color: '#f59e0b' },
   'Organic Search': { label: 'Organisch zoeken', color: '#10b981' },
   'Direct':         { label: 'Direct',           color: '#3b82f6' },
-  'Referral':       { label: 'Referral',         color: '#8b5cf6' },
+  'Referral':       { label: 'Referral',         color: '#3B82F6' },
   'Email':          { label: 'E-mail',           color: '#ec4899' },
   'Unassigned':     { label: 'Overig',           color: '#d1d5db' },
 };
@@ -268,15 +268,15 @@ export default function AnalyticsSection({ dateFrom, dateTo, liSpend = 0, meSpen
                 return (
                   <tr key={i} className="hover:bg-gray-50 transition-colors">
                     <td className="px-5 py-3 font-medium max-w-xs truncate" title={r.campaign}
-                        style={{ color: isUnset ? '#8C9BAF' : '#12101F' }}>
+                        style={{ color: isUnset ? '#8C9BAF' : '#0B1020' }}>
                       {isUnset ? '— geen UTM-campagne —' : r.campaign}
                     </td>
                     <td className="px-5 py-3">
-                      <span className="text-xs font-bold px-2 py-0.5" style={{ background: color, borderRadius: '4px', color: ch === 'google' ? '#12101F' : '#ffffff' }}>
+                      <span className="text-xs font-bold px-2 py-0.5" style={{ background: color, borderRadius: '4px', color: ch === 'google' ? '#0B1020' : '#ffffff' }}>
                         {r.source}
                       </span>
                     </td>
-                    <td className="px-5 py-3 text-right font-semibold tabular-nums" style={{ color: '#12101F' }}>
+                    <td className="px-5 py-3 text-right font-semibold tabular-nums" style={{ color: '#0B1020' }}>
                       {fmtNum(r.completions)}
                     </td>
                   </tr>

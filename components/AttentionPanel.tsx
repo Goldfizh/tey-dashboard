@@ -200,7 +200,7 @@ export default function AttentionPanel({ rows, prevRows, vacancyDropoff }: Props
                     {PLATFORM_LABEL[it.platform]}
                   </span>
                 </div>
-                <p className="text-sm font-medium mt-0.5 truncate" title={it.campaign} style={{ color: '#12101F' }}>
+                <p className="text-sm font-medium mt-0.5 truncate" title={it.campaign} style={{ color: '#0B1020' }}>
                   {it.campaign}
                 </p>
                 <p className="text-xs mt-0.5" style={{ color: '#8C9BAF' }}>{it.detail}</p>
@@ -217,7 +217,7 @@ export default function AttentionPanel({ rows, prevRows, vacancyDropoff }: Props
               <span className="text-sm font-bold" style={{ color: '#F59E0B' }}>
                 Hoge uitval in sollicitatieformulier — {Math.round(dropoffRate * 100)}%
               </span>
-              <p className="text-sm font-medium mt-0.5 truncate" title={vacancyDropoff.jobTitle} style={{ color: '#12101F' }}>
+              <p className="text-sm font-medium mt-0.5 truncate" title={vacancyDropoff.jobTitle} style={{ color: '#0B1020' }}>
                 {vacancyDropoff.jobTitle}
               </p>
               <p className="text-xs mt-0.5" style={{ color: '#8C9BAF' }}>
@@ -232,7 +232,7 @@ export default function AttentionPanel({ rows, prevRows, vacancyDropoff }: Props
           <div className="px-5 py-3 flex items-center gap-3" style={{ background: '#F0FDF4' }}>
             <span className="text-base leading-none">🏆</span>
             <p className="text-xs" style={{ color: '#555E6C' }}>
-              Sterkste deze periode: <span className="font-semibold" style={{ color: '#12101F' }}>{best.name}</span>
+              Sterkste deze periode: <span className="font-semibold" style={{ color: '#0B1020' }}>{best.name}</span>
               {' '}— {best.label} {fmtEur2(best.cpa)}
             </p>
           </div>

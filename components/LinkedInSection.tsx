@@ -124,7 +124,7 @@ export default function LinkedInSection({ dateFrom, dateTo }: Props) {
                 data={daily as unknown as Record<string, unknown>[]}
                 xKey="date"
                 valueKey="spend"
-                color="#7C3AED"
+                color="#2563EB"
                 format={fmtEur}
                 xAngle={-45}
               />
@@ -136,7 +136,7 @@ export default function LinkedInSection({ dateFrom, dateTo }: Props) {
                 lineKey="cpc"
                 barLabel="Clicks"
                 lineLabel="Gem. CPC"
-                barColor="#7C3AED"
+                barColor="#2563EB"
                 lineColor="#9ca3af"
                 barFormat={fmtNum}
                 lineFormat={fmtEur}
@@ -150,7 +150,7 @@ export default function LinkedInSection({ dateFrom, dateTo }: Props) {
                 lineKey="cpa"
                 barLabel="Conversies"
                 lineLabel="CPA"
-                barColor="#7C3AED"
+                barColor="#2563EB"
                 lineColor="#9ca3af"
                 barFormat={fmtNum}
                 lineFormat={fmtEur}
@@ -172,7 +172,7 @@ export default function LinkedInSection({ dateFrom, dateTo }: Props) {
               data={byCamp as unknown as Record<string, unknown>[]}
               xKey="campaign_id"
               valueKey="cpc"
-              color="#7C3AED"
+              color="#2563EB"
               format={fmtEur}
               showLabels
               xAngle={-45}
