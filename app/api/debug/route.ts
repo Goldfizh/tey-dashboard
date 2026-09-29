@@ -30,7 +30,7 @@ export async function GET() {
   }
 
   try {
-    const { linkedin, meta } = await getRawSheetData();
+    const { linkedin, meta, youtube } = await getRawSheetData();
 
     // Parsed view: how the dashboard actually normalises the rows, per platform.
     // This pinpoints whether e.g. LinkedIn spend reads as 0.
@@ -38,7 +38,8 @@ export async function GET() {
     const byPlatform: Record<Platform, { rows: number; spend: number; conversions: number; impressions: number; minDate: string; maxDate: string }> =
       { linkedin: { rows: 0, spend: 0, conversions: 0, impressions: 0, minDate: '', maxDate: '' },
         meta:     { rows: 0, spend: 0, conversions: 0, impressions: 0, minDate: '', maxDate: '' },
-        google:   { rows: 0, spend: 0, conversions: 0, impressions: 0, minDate: '', maxDate: '' } };
+        google:   { rows: 0, spend: 0, conversions: 0, impressions: 0, minDate: '', maxDate: '' },
+        youtube:  { rows: 0, spend: 0, conversions: 0, impressions: 0, minDate: '', maxDate: '' } };
     for (const r of campaigns) {
       const p = byPlatform[r.platform];
       p.rows += 1; p.spend += r.spend; p.conversions += r.conversions; p.impressions += r.impressions;
@@ -59,6 +60,11 @@ export async function GET() {
         headers: meta[0] ?? [],
         sample: meta.slice(1, 21),
         total_rows: Math.max(0, meta.length - 1),
+      },
+      youtube: {
+        headers: youtube[0] ?? [],
+        sample: youtube.slice(1, 21),
+        total_rows: Math.max(0, youtube.length - 1),
       },
     });
   } catch (err) {

@@ -1,4 +1,4 @@
-export type Platform = 'linkedin' | 'meta' | 'google';
+export type Platform = 'linkedin' | 'meta' | 'google' | 'youtube';
 
 export interface CampaignRow {
   platform: Platform;

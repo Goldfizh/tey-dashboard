@@ -89,7 +89,7 @@ function getSheetsClient() {
 
 // ── Raw fetching (with Next.js cache) ────────────────────────────────────────
 
-async function fetchTab(sheetId: string, tabName: string): Promise<string[][]> {
+async function fetchTab(sheetId: string, tabName: string, optional = false): Promise<string[][]> {
   const sheets = getSheetsClient();
   try {
     const res = await sheets.spreadsheets.values.get({
@@ -101,8 +101,13 @@ async function fetchTab(sheetId: string, tabName: string): Promise<string[][]> {
     const status = (err as { status?: number; code?: number }).status
       ?? (err as { status?: number; code?: number }).code;
     const message = (err as { message?: string }).message ?? String(err);
+    const notFound = status === 404 || message.includes('not found');
 
-    if (status === 404 || message.includes('not found')) {
+    // Optional tabs (e.g. "youtube_raw" before that channel's export exists) are allowed to be
+    // missing — the dashboard shows an empty state for that channel instead of failing entirely.
+    if (notFound && optional) return [];
+
+    if (notFound) {
       throw new Error(
         `Sheet tab "${tabName}" not found in spreadsheet "${sheetId}". ` +
         `Check that the tab exists with exactly that name (case-sensitive) ` +
@@ -193,26 +198,66 @@ function normaliseMeta(rows: string[][]): CampaignRow[] {
   });
 }
 
+// Nog geen echte export bekend voor YouTube — zelfde kolomgok-aanpak als Meta/LinkedIn,
+// zodat wat er ook aangeleverd wordt (YouTube Ads-export of YouTube Analytics-export) een
+// redelijke kans heeft om automatisch herkend te worden zodra de "youtube_raw"-tab bestaat.
+function normaliseYouTube(rows: string[][]): CampaignRow[] {
+  if (rows.length < 2) return [];
+  const headers = rows[0].map((h) => h.trim());
+
+  if (process.env.NODE_ENV !== 'production') {
+    console.log('[sheets] youtube_raw headers:', headers);
+  }
+
+  const iCampaign   = findCol(headers, 'campaign: campaign name', 'campaign name', 'campaign', 'campaignname', 'name', 'video title');
+  const iDate       = findCol(headers, 'report: date', 'date', 'day');
+  const iImpr       = findCol(headers, 'performance: impressions', 'impressions', 'impressie', 'views');
+  const iClicks     = findCol(headers, 'performance: clicks', 'clicks');
+  const iSpend      = findCol(headers, 'cost: amount spend', 'amount spent', 'amount spend', 'spent', 'spend', 'cost');
+  const iConv       = findCol(headers, 'conversions', 'leads');
+  const iReach      = findCol(headers, 'performance: reach', 'reach', 'bereik', 'unique viewers');
+  const iThruplays  = findCol(headers, 'thruplays', 'thruplay', 'views (video played to completion)', 'completed views');
+
+  return rows.slice(1).flatMap((row): CampaignRow[] => {
+    const campaign_name = iCampaign >= 0 ? String(row[iCampaign] ?? '').trim() : 'Unknown';
+    const date          = normaliseDate(iDate >= 0 ? row[iDate] : '');
+    if (!campaign_name && !date) return [];
+    return [{
+      platform:      'youtube' as Platform,
+      campaign_name: campaign_name || 'Unknown',
+      impressions:   toNum(iImpr      >= 0 ? row[iImpr]      : 0),
+      clicks:        toNum(iClicks    >= 0 ? row[iClicks]    : 0),
+      spend:         toNum(iSpend     >= 0 ? row[iSpend]     : 0),
+      conversions:   toNum(iConv      >= 0 ? row[iConv]      : 0),
+      reach:         toNum(iReach     >= 0 ? row[iReach]     : 0),
+      thruplays:     toNum(iThruplays >= 0 ? row[iThruplays] : 0),
+      date,
+    }];
+  });
+}
+
 // ── Public API ───────────────────────────────────────────────────────────────
 
 export interface RawSheetData {
   linkedin: string[][];
   meta: string[][];
+  youtube: string[][];
 }
 
 export async function getRawSheetData(): Promise<RawSheetData> {
   const sheetId = process.env.GOOGLE_SHEETS_ID;
   if (!sheetId) throw new Error('Missing GOOGLE_SHEETS_ID env var');
 
-  const [linkedin, meta] = await Promise.all([
+  const [linkedin, meta, youtube] = await Promise.all([
     fetchTab(sheetId, 'linkedin_raw'),
     fetchTab(sheetId, 'meta_raw'),
+    fetchTab(sheetId, 'youtube_raw', /* optional */ true),
   ]);
 
-  return { linkedin, meta };
+  return { linkedin, meta, youtube };
 }
 
 export async function getCampaigns(): Promise<CampaignRow[]> {
-  const { linkedin, meta } = await getRawSheetData();
-  return [...normaliseLinkedIn(linkedin), ...normaliseMeta(meta)];
+  const { linkedin, meta, youtube } = await getRawSheetData();
+  return [...normaliseLinkedIn(linkedin), ...normaliseMeta(meta), ...normaliseYouTube(youtube)];
 }
