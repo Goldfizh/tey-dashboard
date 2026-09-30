@@ -12,6 +12,7 @@ import SollicitatiesSection from '@/components/SollicitatiesSection';
 import type { ChannelResultRow, MetricPairDef, Pacing } from '@/types/results';
 import { DEFAULT_METRIC_PAIRS, kpiToSpendVolumes, sumSpendVolumes } from '@/types/results';
 import { buildResultRows, mergeAchieved } from '@/lib/resultsAdapter';
+import { buildSeedKpiRows } from '@/lib/seedKpiTargets';
 import type { CampaignRow } from '@/types/campaign';
 import { sumRows } from '@/types/campaign';
 import type { ConversionBySource, ConversionByJob, ApplicationStart } from '@/lib/analytics';
@@ -166,7 +167,11 @@ export default function DashboardPage() {
   useEffect(() => {
     try {
       const savedRows = localStorage.getItem('tey_results_rows_v1');
+      // Eerste bezoek (nog niks opgeslagen): start met de KPI-targets uit het Q4-mediaplan i.p.v.
+      // een lege tabel. `achieved` staat hierin altijd op 0 — die vult zich pas als er echte
+      // Sheets/campagnedata binnenkomt via mergeAchieved (zie het effect hieronder).
       if (savedRows) setResultRows(JSON.parse(savedRows) as ChannelResultRow[]);
+      else setResultRows(buildSeedKpiRows());
       const savedPacing = localStorage.getItem('tey_pacing_v1');
       if (savedPacing) setPacing(JSON.parse(savedPacing) as Pacing);
       const savedMetrics = localStorage.getItem('tey_metric_pairs_v1');
