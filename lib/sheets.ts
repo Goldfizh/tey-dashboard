@@ -101,7 +101,10 @@ async function fetchTab(sheetId: string, tabName: string, optional = false): Pro
     const status = (err as { status?: number; code?: number }).status
       ?? (err as { status?: number; code?: number }).code;
     const message = (err as { message?: string }).message ?? String(err);
-    const notFound = status === 404 || message.includes('not found');
+    // The Sheets API doesn't 404 for a tab that doesn't exist — it 400s with
+    // "Unable to parse range: <tabName>", which is the actual signal to detect here.
+    const notFound = status === 404 || message.includes('not found')
+      || message.toLowerCase().includes('unable to parse range');
 
     // Optional tabs (e.g. "youtube_raw" before that channel's export exists) are allowed to be
     // missing — the dashboard shows an empty state for that channel instead of failing entirely.
