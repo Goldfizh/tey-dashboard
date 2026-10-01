@@ -11,7 +11,6 @@ import AnalyticsSection from '@/components/AnalyticsSection';
 import SollicitatiesSection from '@/components/SollicitatiesSection';
 import type { ChannelResultRow, MetricPairDef, Pacing } from '@/types/results';
 import { DEFAULT_METRIC_PAIRS, kpiToSpendVolumes, sumSpendVolumes } from '@/types/results';
-import { buildResultRows, mergeAchieved } from '@/lib/resultsAdapter';
 import { buildSeedKpiRows } from '@/lib/seedKpiTargets';
 import type { CampaignRow } from '@/types/campaign';
 import { sumRows } from '@/types/campaign';
@@ -157,8 +156,8 @@ export default function DashboardPage() {
   const meTotals = useMemo(() => sumRows(filtered.filter((r) => r.platform === 'meta')), [filtered]);
 
   // ── Totaaloverzicht / Kanalen / Analyse — editable resultaten-per-kanaal + budget/pacing.
-  // Alleen `achieved` komt uit de brondata; kpi/comments/activePairKeys/kanaal/campagne vult de
-  // gebruiker zelf in en blijft bewaard in localStorage (zie mergeAchieved in resultsAdapter).
+  // Volledig handmatig samengesteld (zie buildSeedKpiRows in lib/seedKpiTargets.ts) — geen
+  // automatische koppeling met /api/campaigns, zie de toelichting verderop in dit bestand.
   const [resultRows, setResultRows] = useState<ChannelResultRow[]>([]);
   const [pacing, setPacing] = useState<Pacing>({ startDate: '', endDate: '' });
   const [metricPairs, setMetricPairs] = useState<MetricPairDef[]>(DEFAULT_METRIC_PAIRS);
@@ -166,30 +165,31 @@ export default function DashboardPage() {
 
   useEffect(() => {
     try {
-      const savedRows = localStorage.getItem('tey_results_rows_v2');
-      // Eerste bezoek (nog niks opgeslagen): start met de KPI-targets uit het Q4-mediaplan i.p.v.
-      // een lege tabel. `achieved` staat hierin altijd op 0 — die vult zich pas als er echte
-      // Sheets/campagnedata binnenkomt via mergeAchieved (zie het effect hieronder).
+      const savedRows = localStorage.getItem('tey_results_rows_v3');
+      // Eerste bezoek (nog niks opgeslagen): start met de KPI-targets (en, voor Meta, een
+      // handmatig opgehaalde achieved-snapshot) uit buildSeedKpiRows() i.p.v. een lege tabel.
       if (savedRows) setResultRows(JSON.parse(savedRows) as ChannelResultRow[]);
       else setResultRows(buildSeedKpiRows());
-      const savedPacing = localStorage.getItem('tey_pacing_v2');
+      const savedPacing = localStorage.getItem('tey_pacing_v3');
       if (savedPacing) setPacing(JSON.parse(savedPacing) as Pacing);
-      const savedMetrics = localStorage.getItem('tey_metric_pairs_v2');
+      const savedMetrics = localStorage.getItem('tey_metric_pairs_v3');
       if (savedMetrics) setMetricPairs(JSON.parse(savedMetrics) as MetricPairDef[]);
     } catch { /* ignore */ }
     setHasLoadedPersisted(true);
   }, []);
 
-  // Elke nieuwe fetch ververst alleen `achieved`; kpi/comments/activePairKeys die de gebruiker
-  // zelf heeft ingevuld blijven staan (zie mergeAchieved).
-  useEffect(() => {
-    if (!hasLoadedPersisted) return;
-    setResultRows((prev) => mergeAchieved(prev, buildResultRows(rows)));
-  }, [rows, hasLoadedPersisted]);
+  // LET OP: hier stond een automatische merge die bij elke /api/campaigns-fetch alle kanaal/
+  // campagne-combinaties uit de Sheets-export in resultRows zette (via mergeAchieved). Zodra de
+  // Sheets-koppeling werkt, bevat die feed ALLE actieve Meta/LinkedIn-campagnes van Teylingereind
+  // (tientallen, niet alleen deze mediaplan-selectie), dus dat voegde dubbele/extra rijen toe
+  // naast de 10 hieronder. Totaaloverzicht/Kanalen/Analyse tonen daarom nu uitsluitend de
+  // handmatig samengestelde lijst uit buildSeedKpiRows() (incl. een handmatig opgehaalde Meta-
+  // achieved-snapshot) — geen automatische koppeling meer, tot er per kanaal een nette 1-op-1
+  // koppeling (mediaplan-campagne -> echte advertentie-entiteit) is gebouwd.
 
-  useEffect(() => { if (hasLoadedPersisted) localStorage.setItem('tey_results_rows_v2', JSON.stringify(resultRows)); }, [resultRows, hasLoadedPersisted]);
-  useEffect(() => { if (hasLoadedPersisted) localStorage.setItem('tey_pacing_v2', JSON.stringify(pacing)); }, [pacing, hasLoadedPersisted]);
-  useEffect(() => { if (hasLoadedPersisted) localStorage.setItem('tey_metric_pairs_v2', JSON.stringify(metricPairs)); }, [metricPairs, hasLoadedPersisted]);
+  useEffect(() => { if (hasLoadedPersisted) localStorage.setItem('tey_results_rows_v3', JSON.stringify(resultRows)); }, [resultRows, hasLoadedPersisted]);
+  useEffect(() => { if (hasLoadedPersisted) localStorage.setItem('tey_pacing_v3', JSON.stringify(pacing)); }, [pacing, hasLoadedPersisted]);
+  useEffect(() => { if (hasLoadedPersisted) localStorage.setItem('tey_metric_pairs_v3', JSON.stringify(metricPairs)); }, [metricPairs, hasLoadedPersisted]);
 
   const resultsAchievedSpend = useMemo(
     () => resultRows.reduce((sum, r) => sum + r.achieved.spend, 0),
