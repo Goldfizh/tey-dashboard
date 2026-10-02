@@ -27,7 +27,11 @@ export const BASE_METRIC: MetricPairDef = { key: 'impressions', costLabel: 'CPM'
 // + de bijpassende ratio (t.o.v. impressions) er automatisch bij.
 export const GOAL_METRIC_PRESETS: MetricPairDef[] = [
   { key: 'clicks', goalLabel: 'Verkeer', costLabel: 'CPC', volumeLabel: 'Clicks', rateLabel: 'CTR' },
-  { key: 'completedViews', goalLabel: 'Views', costLabel: 'CPCV', volumeLabel: 'Completed views', rateLabel: 'VTR' },
+  // Let op: de achieved-cijfers voor dit paar komen (voor Meta) uit de "video_view"-actie — Meta's
+  // 3-seconden-weergave, niet de "Videoweergaven 100%"/ThruPlay-metric die in Ads Manager te zien
+  // is. De Meta Ads-connector geeft die ThruPlay-waarde niet terug, dus het label is hierop
+  // aangepast zodat niemand "Weergaven (3s)" verwart met een 100%-completion-metric.
+  { key: 'completedViews', goalLabel: 'Views', costLabel: 'CP3S', volumeLabel: 'Weergaven (3s)', rateLabel: 'VTR' },
   { key: 'conversions', goalLabel: 'Leads', costLabel: 'CPA', volumeLabel: 'Conversies', rateLabel: 'Conversie %' },
 ];
 
