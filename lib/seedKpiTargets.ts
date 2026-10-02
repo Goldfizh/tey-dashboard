@@ -33,17 +33,17 @@ const LINKEDIN_CAMPAIGN_SOURCE: Record<string, string> = {
 void META_CAMPAIGN_SOURCE;
 void LINKEDIN_CAMPAIGN_SOURCE;
 
-// Meta-achieved: live opgehaald op 2026-10-01 via de Meta Ads-connector (account
+// Meta-achieved: live opgehaald op 2026-10-02 via de Meta Ads-connector (account
 // act_913728597234821, "Forensisch Centrum Teylingereind"), gescopet op 2026-10-01 t/m
-// 2026-11-30 — de flight is sinds vandaag pas actief, dus dit dekt op dit moment alleen 1 oktober.
+// 2026-11-30 — dekt nu de eerste 2 dagen van de flight (1-2 oktober).
 // `completedViews` is Meta's "video_view"-actie (3+ sec) — de dichtstbijzijnde beschikbare proxy
-// voor "voltooide view", geen exacte thruplay-telling. `conversions` staat op 0: in deze eerste
-// dag kwam er nog geen lead/sollicitatie-actie door.
+// voor "voltooide view", geen exacte thruplay-telling. `conversions` staat op 0: er kwam nog geen
+// lead/sollicitatie-actie door.
 const META_ACHIEVED: Record<string, AchievedMetrics> = {
-  'EB video':               { spend: 9.83, volumes: { impressions: 1325, reach: 1220, clicks: 4,  completedViews: 434,  conversions: 0 } },
-  'Skill video':            { spend: 9.58, volumes: { impressions: 1697, reach: 1668, clicks: 12, completedViews: 444,  conversions: 0 } },
-  'Extra video':            { spend: 10.3, volumes: { impressions: 2471, reach: 2406, clicks: 46, completedViews: 1047, conversions: 0 } },
-  'Persoonlijke verhalen':  { spend: 7.66, volumes: { impressions: 814,  reach: 781,  clicks: 24,                      conversions: 0 } },
+  'EB video':               { spend: 20.04, volumes: { impressions: 2726, reach: 2330, clicks: 10, completedViews: 855,  conversions: 0 } },
+  'Skill video':            { spend: 19.76, volumes: { impressions: 3515, reach: 3449, clicks: 17, completedViews: 911,  conversions: 0 } },
+  'Extra video':            { spend: 21.78, volumes: { impressions: 5259, reach: 5087, clicks: 89, completedViews: 2299, conversions: 0 } },
+  'Persoonlijke verhalen':  { spend: 17.72, volumes: { impressions: 1920, reach: 1756, clicks: 73,                      conversions: 0 } },
 };
 
 // LinkedIn: geen achieved op te halen — de LinkedIn Ads-koppeling van de connector heeft nog geen
