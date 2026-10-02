@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import PacingSummary from '@/components/PacingSummary';
 import PacingChart from '@/components/PacingChart';
 import GoalDailyChart from '@/components/GoalDailyChart';
+import SpendDailyChart from '@/components/SpendDailyChart';
 import TotalsResultsTable from '@/components/TotalsResultsTable';
 import CommentsTable from '@/components/CommentsTable';
 import MetricsFlatTable from '@/components/MetricsFlatTable';
@@ -28,11 +29,6 @@ export default function KanalenTab({ resultRows, rawRows, metricPairs, pacing, o
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
   const rawGroups = useMemo(() => buildRawGroups(rawRows), [rawRows]);
-
-  useEffect(() => {
-    if (!selectedKanaal && kanalen.length > 0) setSelectedKanaal(kanalen[0]);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [kanalen, selectedKanaal]);
 
   const campagnes = useMemo(
     () => resultRows.filter((r) => r.kanaal === selectedKanaal),
@@ -74,11 +70,13 @@ export default function KanalenTab({ resultRows, rawRows, metricPairs, pacing, o
             value={selectedKanaal}
             onChange={(e) => setSelectedKanaal(e.target.value)}
             className="text-sm font-semibold px-3 py-2"
-            style={{ border: '1px solid #DCE0E6', borderRadius: '6px', color: '#22222D', background: '#ffffff' }}
+            style={{ border: '1px solid #DCE0E6', borderRadius: '6px', color: selectedKanaal ? '#22222D' : '#8C9BAF', background: '#ffffff' }}
           >
+            <option value="">Kies een kanaal…</option>
             {kanalen.map((k) => <option key={k} value={k}>{k}</option>)}
           </select>
         </div>
+        {selectedKanaal && (
         <div>
           <p className="gf-eyebrow mb-2">Campagne(s)</p>
           <div className="flex flex-wrap gap-2">
@@ -105,9 +103,12 @@ export default function KanalenTab({ resultRows, rawRows, metricPairs, pacing, o
             })}
           </div>
         </div>
+        )}
       </div>
 
-      {selected.length === 0 ? (
+      {!selectedKanaal ? (
+        <p className="text-sm" style={{ color: '#8C9BAF' }}>Kies eerst een kanaal hierboven.</p>
+      ) : selected.length === 0 ? (
         <p className="text-sm" style={{ color: '#8C9BAF' }}>Kies minstens één campagne om de resultaten te zien.</p>
       ) : (
         <>
@@ -119,6 +120,11 @@ export default function KanalenTab({ resultRows, rawRows, metricPairs, pacing, o
               <PacingSummary pacing={pacing} onChange={onChangePacing} achievedSpend={achievedSpend} kpiSpendTotal={kpiSpendTotal} />
               <PacingChart dailyEntities={dailyGroup} pacing={pacing} kpiSpendTotal={kpiSpendTotal} />
             </div>
+          </div>
+
+          <div>
+            <h2 className="gf-eyebrow mb-5">Spend per dag</h2>
+            <SpendDailyChart dailyEntities={dailyGroup} />
           </div>
 
           {activePairs.length > 0 && (
