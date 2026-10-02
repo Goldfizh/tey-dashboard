@@ -13,6 +13,7 @@ import type { ChannelResultRow, MetricPairDef, Pacing } from '@/types/results';
 import { kpiToSpendVolumes, sumSpendVolumes } from '@/types/results';
 import type { CampaignRow } from '@/types/campaign';
 import { buildDailyEntities, buildRawGroups } from '@/lib/resultsAdapter';
+import { META_DRILLDOWN } from '@/lib/seedDrilldown';
 
 interface Props {
   resultRows: ChannelResultRow[]; // alle campagnes, alle actieve kanalen
@@ -59,6 +60,25 @@ export default function KanalenTab({ resultRows, rawRows, metricPairs, pacing, o
     for (const c of selected) rows.push(...(rawGroups.get(c.id)?.rows ?? []));
     return buildDailyEntities(rows);
   }, [selected, rawGroups]);
+
+  // Doelgroep-/advertentieniveau — alleen voor Meta (zie lib/seedDrilldown.ts voor de aannames
+  // en beperkingen). LinkedIn koopt per advertentieset in (dus geen apart doelgroepniveau nodig)
+  // en heeft nog geen werkende databron; YouTube heeft geen van beide niveaus.
+  const multiSelected = selected.length > 1;
+  const doelgroepRows = useMemo(() => {
+    if (selectedKanaal !== 'Meta') return [];
+    return selected.flatMap((c) => {
+      const rows = META_DRILLDOWN[c.campagne]?.doelgroepen ?? [];
+      return rows.map((r) => ({ label: multiSelected ? `${c.campagne} — ${r.label}` : r.label, metrics: r.metrics }));
+    });
+  }, [selected, selectedKanaal, multiSelected]);
+  const advertentieRows = useMemo(() => {
+    if (selectedKanaal !== 'Meta') return [];
+    return selected.flatMap((c) => {
+      const rows = META_DRILLDOWN[c.campagne]?.advertenties ?? [];
+      return rows.map((r) => ({ label: multiSelected ? `${c.campagne} — ${r.label}` : r.label, metrics: r.metrics }));
+    });
+  }, [selected, selectedKanaal, multiSelected]);
 
   return (
     <div className="space-y-8">
@@ -156,6 +176,34 @@ export default function KanalenTab({ resultRows, rawRows, metricPairs, pacing, o
               metricPairs={activePairs}
             />
           </div>
+
+          {selectedKanaal === 'Meta' && (
+            <div>
+              <h2 className="gf-eyebrow mb-5">Resultaten per doelgroep</h2>
+              {doelgroepRows.length === 0 ? (
+                <p className="text-sm" style={{ color: '#8C9BAF' }}>
+                  Geen betrouwbare doelgroep-uitsplitsing voor deze selectie (zie toelichting in lib/seedDrilldown.ts).
+                </p>
+              ) : (
+                <MetricsFlatTable labelHeader="Doelgroep" entities={doelgroepRows} metricPairs={activePairs} />
+              )}
+            </div>
+          )}
+
+          {(selectedKanaal === 'Meta' || selectedKanaal === 'LinkedIn') && (
+            <div>
+              <h2 className="gf-eyebrow mb-5">Resultaten per advertentie</h2>
+              {advertentieRows.length === 0 ? (
+                <p className="text-sm" style={{ color: '#8C9BAF' }}>
+                  {selectedKanaal === 'LinkedIn'
+                    ? 'Nog geen data — de LinkedIn Ads-koppeling heeft nog geen geldige authenticatie.'
+                    : 'Geen betrouwbare advertentie-uitsplitsing voor deze selectie (zie toelichting in lib/seedDrilldown.ts).'}
+                </p>
+              ) : (
+                <MetricsFlatTable labelHeader="Advertentie" entities={advertentieRows} metricPairs={activePairs} />
+              )}
+            </div>
+          )}
 
           <div>
             <h2 className="gf-eyebrow mb-5">Resultaten per dag</h2>

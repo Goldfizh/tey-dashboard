@@ -165,14 +165,14 @@ export default function DashboardPage() {
 
   useEffect(() => {
     try {
-      const savedRows = localStorage.getItem('tey_results_rows_v4');
+      const savedRows = localStorage.getItem('tey_results_rows_v5');
       // Eerste bezoek (nog niks opgeslagen): start met de KPI-targets (en, voor Meta, een
       // handmatig opgehaalde achieved-snapshot) uit buildSeedKpiRows() i.p.v. een lege tabel.
       if (savedRows) setResultRows(JSON.parse(savedRows) as ChannelResultRow[]);
       else setResultRows(buildSeedKpiRows());
-      const savedPacing = localStorage.getItem('tey_pacing_v4');
+      const savedPacing = localStorage.getItem('tey_pacing_v5');
       if (savedPacing) setPacing(JSON.parse(savedPacing) as Pacing);
-      const savedMetrics = localStorage.getItem('tey_metric_pairs_v4');
+      const savedMetrics = localStorage.getItem('tey_metric_pairs_v5');
       if (savedMetrics) setMetricPairs(JSON.parse(savedMetrics) as MetricPairDef[]);
     } catch { /* ignore */ }
     setHasLoadedPersisted(true);
@@ -187,9 +187,9 @@ export default function DashboardPage() {
   // achieved-snapshot) — geen automatische koppeling meer, tot er per kanaal een nette 1-op-1
   // koppeling (mediaplan-campagne -> echte advertentie-entiteit) is gebouwd.
 
-  useEffect(() => { if (hasLoadedPersisted) localStorage.setItem('tey_results_rows_v4', JSON.stringify(resultRows)); }, [resultRows, hasLoadedPersisted]);
-  useEffect(() => { if (hasLoadedPersisted) localStorage.setItem('tey_pacing_v4', JSON.stringify(pacing)); }, [pacing, hasLoadedPersisted]);
-  useEffect(() => { if (hasLoadedPersisted) localStorage.setItem('tey_metric_pairs_v4', JSON.stringify(metricPairs)); }, [metricPairs, hasLoadedPersisted]);
+  useEffect(() => { if (hasLoadedPersisted) localStorage.setItem('tey_results_rows_v5', JSON.stringify(resultRows)); }, [resultRows, hasLoadedPersisted]);
+  useEffect(() => { if (hasLoadedPersisted) localStorage.setItem('tey_pacing_v5', JSON.stringify(pacing)); }, [pacing, hasLoadedPersisted]);
+  useEffect(() => { if (hasLoadedPersisted) localStorage.setItem('tey_metric_pairs_v5', JSON.stringify(metricPairs)); }, [metricPairs, hasLoadedPersisted]);
 
   const resultsAchievedSpend = useMemo(
     () => resultRows.reduce((sum, r) => sum + r.achieved.spend, 0),
