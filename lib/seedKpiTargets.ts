@@ -25,10 +25,14 @@ const META_CAMPAIGN_SOURCE: Record<string, string> = {
   'Extra video': "Employer Branding 2026 | Interactie | Extra video's | Always on (id 120243077768790642)",
   'Persoonlijke verhalen': 'Employer Branding 2026 | Verkeer | Medewerkersverhalen | Always on (id 120251198804710642)',
 };
+// LinkedIn-advertentieaccount van Teylingereind: 513737683 (urn:li:sponsoredAccount:513737683).
+// 757030574 is GEEN account-ID maar de campagnegroep waaronder alle 3 onderstaande campagnes
+// hangen. Elke rij hieronder is wat Teylingereind zelf "een campagne" noemt — in LinkedIn's eigen
+// hiërarchie is dat een losse Campaign (niet een Campaign Group en niet een Creative).
 const LINKEDIN_CAMPAIGN_SOURCE: Record<string, string> = {
-  'EB video': 'Wervingscampagne 2026 - Interactie - Employer brand merkvideo (klikken) — LinkedIn account 757030574',
-  'Skill video': 'Wervingscampagne 2026 - Interactie - Skill Ads (klikken) — LinkedIn account 757030574',
-  'Extra video': "Wervingscampagne 2026 - Interactie - Extra video's (klikken) — LinkedIn account 757030574",
+  'EB video': 'Wervingscampagne 2026 - Interactie - Employer brand merkvideo (klikken) — campaign id 585205134',
+  'Skill video': 'Wervingscampagne 2026 - Interactie - Skill Ads (klikken) — campaign id 583309154',
+  'Extra video': "Wervingscampagne 2026 - Interactie - Extra video's (klikken) — campaign id 584808854",
 };
 void META_CAMPAIGN_SOURCE;
 void LINKEDIN_CAMPAIGN_SOURCE;
@@ -46,10 +50,12 @@ const META_ACHIEVED: Record<string, AchievedMetrics> = {
   'Persoonlijke verhalen':  { spend: 17.72, volumes: { impressions: 1920, reach: 1756, clicks: 73,                      conversions: 0 } },
 };
 
-// LinkedIn: geen achieved op te halen — de LinkedIn Ads-koppeling van de connector heeft nog geen
-// geldige authenticatie (zelfde blokkade als eerder gemeld: ontbrekende/verlopen token, vereist
-// een nieuwe app + goedkeuring in het LinkedIn Developer Portal). Blijft dus op 0 tot dat opgelost
-// is. YouTube: koppeling moet nog gebouwd worden (geen databron bekend), ook op 0.
+// LinkedIn: geen achieved op te halen — account 513737683 staat inmiddels in de Marketing
+// Developer Platform-productinstellingen van de app, maar de connector heeft nog geen geldig
+// OAuth-token (dezelfde generieke authenticatiefout, ongeacht welk account-ID aangeroepen wordt —
+// getest op 2026-10-03 met zowel 757030574 als 513737683). Blijft op 0 tot er een Access/Refresh
+// Token (scopes r_ads, r_ads_reporting) in de connector-configuratie staat. YouTube: koppeling
+// moet nog gebouwd worden (geen databron bekend), ook op 0.
 
 interface SeedKpiRow {
   platform: Platform;
