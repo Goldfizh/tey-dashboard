@@ -41,17 +41,19 @@ export const LINKEDIN_CAMPAIGNS: Record<string, string> = {
 };
 void META_CAMPAIGN_SOURCE;
 
-// Meta-achieved: live opgehaald op 2026-10-02 via de Meta Ads-connector (account
+// Meta-achieved: live opgehaald op 2026-10-09 via de Meta Ads-connector (account
 // act_913728597234821, "Forensisch Centrum Teylingereind"), gescopet op 2026-10-01 t/m
-// 2026-11-30 — dekt nu de eerste 2 dagen van de flight (1-2 oktober).
+// 2026-11-30 — dekt nu 1 t/m 10 oktober. Nog steeds een handmatige snapshot (geen live API-
+// koppeling in de code zoals bij LinkedIn) — moet je opnieuw laten verversen als je recentere
+// cijfers wilt.
 // `completedViews` is Meta's "video_view"-actie (3+ sec) — de dichtstbijzijnde beschikbare proxy
 // voor "voltooide view", geen exacte thruplay-telling. `conversions` staat op 0: er kwam nog geen
 // lead/sollicitatie-actie door.
 const META_ACHIEVED: Record<string, AchievedMetrics> = {
-  'EB video':               { spend: 20.04, volumes: { impressions: 2726, reach: 2330, clicks: 10, completedViews: 855,  conversions: 0 } },
-  'Skill video':            { spend: 19.76, volumes: { impressions: 3515, reach: 3449, clicks: 17, completedViews: 911,  conversions: 0 } },
-  'Extra video':            { spend: 21.78, volumes: { impressions: 5259, reach: 5087, clicks: 89, completedViews: 2299, conversions: 0 } },
-  'Persoonlijke verhalen':  { spend: 17.72, volumes: { impressions: 1920, reach: 1756, clicks: 73,                      conversions: 0 } },
+  'EB video':               { spend: 134.01, volumes: { impressions: 19873, reach: 11572, clicks: 94,  completedViews: 6044,  conversions: 0 } },
+  'Skill video':            { spend: 133.89, volumes: { impressions: 23398, reach: 21576, clicks: 105, completedViews: 6208,  conversions: 0 } },
+  'Extra video':            { spend: 143.22, volumes: { impressions: 33679, reach: 27425, clicks: 492, completedViews: 13852, conversions: 0 } },
+  'Persoonlijke verhalen':  { spend: 120.32, volumes: { impressions: 13942, reach: 9660,  clicks: 430,                       conversions: 0 } },
 };
 
 // LinkedIn: live gekoppeld via app/api/linkedin/campaigns/route.ts (lib/linkedin.ts), rechtstreeks

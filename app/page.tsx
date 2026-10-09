@@ -166,14 +166,14 @@ export default function DashboardPage() {
 
   useEffect(() => {
     try {
-      const savedRows = localStorage.getItem('tey_results_rows_v7');
+      const savedRows = localStorage.getItem('tey_results_rows_v8');
       // Eerste bezoek (nog niks opgeslagen): start met de KPI-targets (en, voor Meta, een
       // handmatig opgehaalde achieved-snapshot) uit buildSeedKpiRows() i.p.v. een lege tabel.
       if (savedRows) setResultRows(JSON.parse(savedRows) as ChannelResultRow[]);
       else setResultRows(buildSeedKpiRows());
-      const savedPacing = localStorage.getItem('tey_pacing_v7');
+      const savedPacing = localStorage.getItem('tey_pacing_v8');
       if (savedPacing) setPacing(JSON.parse(savedPacing) as Pacing);
-      const savedMetrics = localStorage.getItem('tey_metric_pairs_v7');
+      const savedMetrics = localStorage.getItem('tey_metric_pairs_v8');
       if (savedMetrics) setMetricPairs(JSON.parse(savedMetrics) as MetricPairDef[]);
     } catch { /* ignore */ }
     setHasLoadedPersisted(true);
@@ -212,9 +212,9 @@ export default function DashboardPage() {
 
   useEffect(() => { if (hasLoadedPersisted) fetchLinkedIn(); }, [hasLoadedPersisted, fetchLinkedIn]);
 
-  useEffect(() => { if (hasLoadedPersisted) localStorage.setItem('tey_results_rows_v7', JSON.stringify(resultRows)); }, [resultRows, hasLoadedPersisted]);
-  useEffect(() => { if (hasLoadedPersisted) localStorage.setItem('tey_pacing_v7', JSON.stringify(pacing)); }, [pacing, hasLoadedPersisted]);
-  useEffect(() => { if (hasLoadedPersisted) localStorage.setItem('tey_metric_pairs_v7', JSON.stringify(metricPairs)); }, [metricPairs, hasLoadedPersisted]);
+  useEffect(() => { if (hasLoadedPersisted) localStorage.setItem('tey_results_rows_v8', JSON.stringify(resultRows)); }, [resultRows, hasLoadedPersisted]);
+  useEffect(() => { if (hasLoadedPersisted) localStorage.setItem('tey_pacing_v8', JSON.stringify(pacing)); }, [pacing, hasLoadedPersisted]);
+  useEffect(() => { if (hasLoadedPersisted) localStorage.setItem('tey_metric_pairs_v8', JSON.stringify(metricPairs)); }, [metricPairs, hasLoadedPersisted]);
 
   const resultsAchievedSpend = useMemo(
     () => resultRows.reduce((sum, r) => sum + r.achieved.spend, 0),
