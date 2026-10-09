@@ -9,11 +9,14 @@
 // moet er handmatig een nieuw access token gegenereerd worden (zelfde OAuth-stap als de eerste
 // keer) tot hier automatische refresh-logica aan toegevoegd wordt.
 //
-// Live geprobeerd op 2026-10-09: authenticatie werkte (geen 401), maar LinkedIn gaf
-// "ILLEGAL_ARGUMENT: Invalid query parameters" terug op de eerste versie van de query hieronder
-// (die gebruikte `campaigns=List(...)`-syntax). Aangepast naar de geïndexeerde array-vorm
-// (`campaigns[0]=...&campaigns[1]=...`) die in LinkedIn's eigen Ad Analytics-voorbeelden staat —
-// nog te bevestigen of dát de juiste vorm is.
+// Live geprobeerd op 2026-10-09: authenticatie werkte (geen 401). Twee pogingen gaven allebei
+// exact dezelfde "ILLEGAL_ARGUMENT: Invalid query parameters" terug — zowel met `campaigns=List(...)`
+// als met de geïndexeerde array-vorm `campaigns[0]=...`. Omdat de fout bij een fundamenteel andere
+// array-encoding identiek bleef, ligt de oorzaak vermoedelijk niet bij `campaigns`. Sterkste
+// kandidaat: `approximateMemberReach` — een bekend LinkedIn-API-veld dat niet gecombineerd mag
+// worden met de meeste andere metrics in dezelfde aanvraag. Hieronder verwijderd; `reach` blijft
+// daardoor voorlopig op 0 voor LinkedIn. `campaigns` staat terug op `List(...)`, de Rest.li
+// 2.0.0-standaardvorm die hoort bij de `X-Restli-Protocol-Version: 2.0.0`-header die we al sturen.
 
 import type { AchievedMetrics } from '@/types/results';
 
@@ -32,14 +35,15 @@ function buildAnalyticsUrl(campaignIds: string[], start: Date, end: Date): strin
   const s = ymd(start);
   const e = ymd(end);
   const dateRange = `(start:(year:${s.year},month:${s.month},day:${s.day}),end:(year:${e.year},month:${e.month},day:${e.day}))`;
-  const fields = ['dateRange', 'pivotValues', 'impressions', 'clicks', 'costInLocalCurrency', 'externalWebsiteConversions', 'approximateMemberReach'].join(',');
+  const fields = ['dateRange', 'pivotValues', 'impressions', 'clicks', 'costInLocalCurrency', 'externalWebsiteConversions'].join(',');
+  const campaignsList = `List(${campaignIds.map((id) => encodeURIComponent(`urn:li:sponsoredCampaign:${id}`)).join(',')})`;
 
   const params = [
     'q=analytics',
     'pivot=CAMPAIGN',
     'timeGranularity=ALL',
     `dateRange=${encodeURIComponent(dateRange)}`,
-    ...campaignIds.map((id, i) => `campaigns[${i}]=${encodeURIComponent(`urn:li:sponsoredCampaign:${id}`)}`),
+    `campaigns=${campaignsList}`,
     `fields=${fields}`,
   ].join('&');
 
