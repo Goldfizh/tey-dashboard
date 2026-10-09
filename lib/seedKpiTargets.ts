@@ -1,30 +1,23 @@
-// KPI-targets (en, voor Meta, een handmatig opgehaalde achieved-snapshot) uit het Q4-mediaplan,
-// per kanaal en campagne. Campagnenaam is overal het korte label (EB video/Extra video/Skill
-// video/Persoonlijke verhalen) — bewust niet de volle naam zoals in Meta Ads Manager of LinkedIn
-// Campaign Manager (zie de *_SOURCE-mappings hieronder voor die koppeling). Alleen Meta heeft een
-// "Persoonlijke verhalen"-campagne; LinkedIn en YouTube niet.
+// KPI-targets uit het Q4-mediaplan, per kanaal en campagne. Campagnenaam is overal het korte
+// label (EB video/Extra video/Skill video/Persoonlijke verhalen) — bewust niet de volle naam
+// zoals in Meta Ads Manager of LinkedIn Campaign Manager (zie de *_CAMPAIGNS-mappings hieronder
+// voor die koppeling). Alleen Meta heeft een "Persoonlijke verhalen"-campagne; LinkedIn en
+// YouTube niet.
 //
 // `spend`/`cpm`/`cpc`/`cpcv`/`frequency` = de KPI-targets uit het mediaplan (kolom "Mediaspend"
 // e.v.), niet de realisatiecijfers uit de "Uitgegeven"/"Nieuw budget"-kolommen.
 //
 // Geen automatische koppeling met de Sheets-feed (/api/campaigns): die bevat ALLE actieve Meta/
-// LinkedIn-campagnes van Teylingereind, niet alleen deze 10 — automatisch mergen gaf dubbele/
-// extra rijen. Achieved wordt daarom per kanaal handmatig bijgewerkt totdat er een nette 1-op-1
-// koppeling per kanaal is gebouwd.
+// LinkedIn-campagnes van Teylingereind (en voor Meta bovendien alleen data van 3 april t/m 2 juni
+// 2026 — niet de huidige Q4-periode), niet alleen deze 10 — automatisch mergen gaf dubbele/extra
+// rijen. Achieved komt daarom per kanaal uit een eigen live API-koppeling (zie LINKEDIN_CAMPAIGNS/
+// META_CAMPAIGNS hieronder), gescopet op precies deze campagne-ID's.
 
 import type { Platform } from '@/types/campaign';
 import { PLATFORM_LABEL, slugify } from '@/lib/resultsAdapter';
 import type { ChannelResultRow } from '@/types/results';
-import { emptyAchieved, type AchievedMetrics } from '@/types/results';
+import { emptyAchieved } from '@/types/results';
 
-// Bron-koppeling per campagnelabel — voor traceerbaarheid en de volgende live-fetch, niet
-// elders in code gebruikt.
-const META_CAMPAIGN_SOURCE: Record<string, string> = {
-  'EB video': 'Employer Branding 2026 | Interactie | Employer brand video | Always on (id 120243062630350642)',
-  'Skill video': 'Employer Branding 2026 | Interactie | Skill Ad | Always on (id 120243066967440642)',
-  'Extra video': "Employer Branding 2026 | Interactie | Extra video's | Always on (id 120243077768790642)",
-  'Persoonlijke verhalen': 'Employer Branding 2026 | Verkeer | Medewerkersverhalen | Always on (id 120251198804710642)',
-};
 // LinkedIn-advertentieaccount van Teylingereind: 513737683 (urn:li:sponsoredAccount:513737683).
 // 757030574 is GEEN account-ID maar de campagnegroep waaronder alle 3 onderstaande campagnes
 // hangen. Elke rij hieronder is wat Teylingereind zelf "een campagne" noemt — in LinkedIn's eigen
@@ -39,30 +32,23 @@ export const LINKEDIN_CAMPAIGNS: Record<string, string> = {
   'Extra video': '584808854',          // Wervingscampagne 2026 - Interactie - Extra video's (klikken)
   'Persoonlijke verhalen': '901424154', // Medewerkers verhalen — 4e advertentieset onder campagnegroep "Employer branding klikken" (757030574)
 };
-void META_CAMPAIGN_SOURCE;
 
-// Meta-achieved: live opgehaald op 2026-10-09 via de Meta Ads-connector (account
-// act_913728597234821, "Forensisch Centrum Teylingereind"), gescopet op 2026-10-01 t/m
-// 2026-11-30 — dekt nu 1 t/m 10 oktober. Nog steeds een handmatige snapshot (geen live API-
-// koppeling in de code zoals bij LinkedIn) — moet je opnieuw laten verversen als je recentere
-// cijfers wilt.
-// `completedViews` is Meta's "video_view"-actie (3+ sec) — de dichtstbijzijnde beschikbare proxy
-// voor "voltooide view", geen exacte thruplay-telling. `conversions` staat op 0: er kwam nog geen
-// lead/sollicitatie-actie door.
-const META_ACHIEVED: Record<string, AchievedMetrics> = {
-  'EB video':               { spend: 134.01, volumes: { impressions: 19873, reach: 11572, clicks: 94,  completedViews: 6044,  conversions: 0 } },
-  'Skill video':            { spend: 133.89, volumes: { impressions: 23398, reach: 21576, clicks: 105, completedViews: 6208,  conversions: 0 } },
-  'Extra video':            { spend: 143.22, volumes: { impressions: 33679, reach: 27425, clicks: 492, completedViews: 13852, conversions: 0 } },
-  'Persoonlijke verhalen':  { spend: 120.32, volumes: { impressions: 13942, reach: 9660,  clicks: 430,                       conversions: 0 } },
+// Meta-advertentieaccount van Teylingereind: 913728597234821 ("Forensisch Centrum
+// Teylingereind", env var META_AD_ACCOUNT_ID). label -> Meta campaign-ID. Gebruikt door
+// app/api/meta/campaigns/route.ts (via lib/meta.ts) om precies déze 4 campagnes op te halen,
+// rechtstreeks via de Graph API — niet meer via de handmatige chat-connector-snapshot.
+export const META_CAMPAIGNS: Record<string, string> = {
+  'EB video': '120243062630350642',              // Employer Branding 2026 | Interactie | Employer brand video | Always on
+  'Skill video': '120243066967440642',           // Employer Branding 2026 | Interactie | Skill Ad | Always on
+  'Extra video': '120243077768790642',           // Employer Branding 2026 | Interactie | Extra video's | Always on
+  'Persoonlijke verhalen': '120251198804710642', // Employer Branding 2026 | Verkeer | Medewerkersverhalen | Always on
 };
 
-// LinkedIn: live gekoppeld via app/api/linkedin/campaigns/route.ts (lib/linkedin.ts), rechtstreeks
-// de LinkedIn Marketing API — geen statische snapshot zoals bij Meta. `achieved` in
-// buildSeedKpiRows() blijft hieronder op 0 (als placeholder bij de eerste render); de echte cijfers
-// komen er na het laden overheen via applyAchievedByLabel() in app/page.tsx. Op 2026-10-05 gaf een
-// eerder token "REVOKED_ACCESS_TOKEN" terug — op 2026-10-09 is een nieuwe OAuth-verbinding gemaakt,
-// nog te bevestigen of die werkt. YouTube: koppeling moet nog gebouwd worden (geen databron
-// bekend), blijft op 0.
+// LinkedIn en Meta: beide live gekoppeld via hun eigen /api/*/campaigns-route (lib/linkedin.ts,
+// lib/meta.ts), rechtstreeks de bijbehorende Marketing API — geen statische snapshot meer. De
+// `achieved`-waarden in buildSeedKpiRows() blijven hieronder op 0 (placeholder bij eerste render);
+// de echte cijfers komen er na het laden overheen via applyAchievedByLabel() in app/page.tsx.
+// YouTube: koppeling moet nog gebouwd worden (geen databron bekend), blijft op 0.
 
 interface SeedKpiRow {
   platform: Platform;
@@ -75,9 +61,8 @@ interface SeedKpiRow {
 }
 
 // De 3 Meta-videocampagnes (EB video/Extra video/Skill video) hebben naast hun CPCV-doel óók een
-// CPC-doel ontvangen (2026-10-09) — zonder die target bleven hun échte clicks (die er wel degelijk
-// zijn, zie META_ACHIEVED) buiten de Clicks/CPC-kolommen en dus buiten de opgetelde
-// Totaalresultaten vallen, wat dat totaalbeeld vertekende.
+// CPC-doel ontvangen (2026-10-09) — zonder die target bleven hun échte clicks buiten de Clicks/
+// CPC-kolommen en dus buiten de opgetelde Totaalresultaten vallen, wat dat totaalbeeld vertekende.
 
 const SEED_KPI_ROWS: SeedKpiRow[] = [
   // ── Naamsbekendheid ──
@@ -106,12 +91,11 @@ export function buildSeedKpiRows(): ChannelResultRow[] {
     const activePairKeys: string[] = [];
     if (r.cpc !== undefined) { costs.clicks = r.cpc; activePairKeys.push('clicks'); }
     if (r.cpcv !== undefined) { costs.completedViews = r.cpcv; activePairKeys.push('completedViews'); }
-    const achieved = r.platform === 'meta' ? META_ACHIEVED[r.campagne] : undefined;
     return {
       id: `${r.platform}__${slugify(r.campagne)}`,
       kanaal: PLATFORM_LABEL[r.platform],
       campagne: r.campagne,
-      achieved: achieved ?? emptyAchieved(),
+      achieved: emptyAchieved(),
       kpi: { spend: r.spend, costs, frequency: r.frequency },
       activePairKeys,
       comments: [],
