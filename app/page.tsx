@@ -77,9 +77,15 @@ export default function DashboardPage() {
         const json = await campaignsRes.json().catch(() => ({}));
         throw new Error((json as { error?: string }).error ?? `HTTP ${campaignsRes.status}`);
       }
-      const campaigns: CampaignRow[] = await campaignsRes.json();
+      // LinkedIn uit de Sheets-feed wordt genegeerd — LinkedIn heeft z'n eigen live databron
+      // (fetchLinkedIn, rechtstreeks de LinkedIn API). Zonder deze filter plus de merge hieronder
+      // (i.p.v. vervangen) kon deze fetch, als hij ná fetchLinkedIn afrondde, de net opgehaalde
+      // LinkedIn dag-rijen weer overschrijven met de verouderde Sheets-versie — de oorzaak van de
+      // lege dag-grafieken in Kanalen ondanks correcte LinkedIn API-data.
+      const campaignsAll: CampaignRow[] = await campaignsRes.json();
+      const campaigns = campaignsAll.filter((r) => r.platform !== 'linkedin');
       const google: CampaignRow[] = googleRes.ok ? await googleRes.json() : [];
-      setRows([...campaigns, ...google]);
+      setRows((prev) => [...prev.filter((r) => r.platform === 'linkedin'), ...campaigns, ...google]);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unknown error');
     } finally {
