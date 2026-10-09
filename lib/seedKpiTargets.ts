@@ -89,9 +89,8 @@ const SEED_KPI_ROWS: SeedKpiRow[] = [
 
   // ── Verkeer ──
   { platform: 'meta', campagne: 'Persoonlijke verhalen', spend: 845, cpm: 9.00, frequency: 4, cpc: 0.45 },
-  // LinkedIn "Persoonlijke verhalen" (Medewerkers verhalen, id 901424154): nog geen KPI-target uit
-  // een mediaplan ontvangen — spend/cpm/cpc staan voorlopig op 0 totdat die cijfers er zijn.
-  { platform: 'linkedin', campagne: 'Persoonlijke verhalen', spend: 0, cpm: 0, frequency: 0, cpc: 0 },
+  // LinkedIn "Persoonlijke verhalen" (Medewerkers verhalen, id 901424154) — KPI-target ontvangen op 2026-10-09.
+  { platform: 'linkedin', campagne: 'Persoonlijke verhalen', spend: 845, cpm: 20.00, frequency: 4, cpc: 4.50 },
 ];
 
 export function buildSeedKpiRows(): ChannelResultRow[] {

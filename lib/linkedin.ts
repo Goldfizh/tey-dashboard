@@ -9,10 +9,11 @@
 // moet er handmatig een nieuw access token gegenereerd worden (zelfde OAuth-stap als de eerste
 // keer) tot hier automatische refresh-logica aan toegevoegd wordt.
 //
-// LET OP: dit is nog niet live getest tegen de echte LinkedIn API — er is geen werkend token
-// beschikbaar in de omgeving waar deze code geschreven is. Bij de eerste echte aanroep kan de
-// exacte vorm van de query (Rest.li-syntax) nog aanpassing nodig hebben; zie de foutmelding die
-// /api/linkedin/campaigns teruggeeft (die bevat de ruwe LinkedIn-foutrespons, niet alleen "faalde").
+// Live geprobeerd op 2026-10-09: authenticatie werkte (geen 401), maar LinkedIn gaf
+// "ILLEGAL_ARGUMENT: Invalid query parameters" terug op de eerste versie van de query hieronder
+// (die gebruikte `campaigns=List(...)`-syntax). Aangepast naar de geïndexeerde array-vorm
+// (`campaigns[0]=...&campaigns[1]=...`) die in LinkedIn's eigen Ad Analytics-voorbeelden staat —
+// nog te bevestigen of dát de juiste vorm is.
 
 import type { AchievedMetrics } from '@/types/results';
 
@@ -31,15 +32,14 @@ function buildAnalyticsUrl(campaignIds: string[], start: Date, end: Date): strin
   const s = ymd(start);
   const e = ymd(end);
   const dateRange = `(start:(year:${s.year},month:${s.month},day:${s.day}),end:(year:${e.year},month:${e.month},day:${e.day}))`;
-  const campaignsList = `List(${campaignIds.map((id) => encodeURIComponent(`urn:li:sponsoredCampaign:${id}`)).join(',')})`;
-  const fields = ['impressions', 'clicks', 'costInLocalCurrency', 'externalWebsiteConversions', 'approximateMemberReach'].join(',');
+  const fields = ['dateRange', 'pivotValues', 'impressions', 'clicks', 'costInLocalCurrency', 'externalWebsiteConversions', 'approximateMemberReach'].join(',');
 
   const params = [
     'q=analytics',
     'pivot=CAMPAIGN',
     'timeGranularity=ALL',
     `dateRange=${encodeURIComponent(dateRange)}`,
-    `campaigns=${campaignsList}`,
+    ...campaignIds.map((id, i) => `campaigns[${i}]=${encodeURIComponent(`urn:li:sponsoredCampaign:${id}`)}`),
     `fields=${fields}`,
   ].join('&');
 
@@ -73,8 +73,10 @@ export async function getLinkedInCampaignResults(campaignIds: string[], start: D
   const data = (await res.json()) as { elements?: Record<string, unknown>[] };
 
   return (data.elements ?? []).map((el) => {
-    const pivotValue = String(el.pivotValue ?? '');
-    const campaignId = pivotValue.split(':').pop() ?? '';
+    // Bij pivot=CAMPAIGN geeft LinkedIn "pivotValues" terug: een array met exact 1 URN erin
+    // (één per rij), bv. ["urn:li:sponsoredCampaign:585205134"].
+    const pivotValues = Array.isArray(el.pivotValues) ? (el.pivotValues as string[]) : [];
+    const campaignId = (pivotValues[0] ?? '').split(':').pop() ?? '';
     return {
       campaignId,
       achieved: {
