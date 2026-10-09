@@ -38,11 +38,17 @@ function buildAnalyticsUrl(campaignIds: string[], start: Date, end: Date): strin
   const fields = ['dateRange', 'pivotValues', 'impressions', 'clicks', 'costInLocalCurrency', 'externalWebsiteConversions'].join(',');
   const campaignsList = `List(${campaignIds.map((id) => encodeURIComponent(`urn:li:sponsoredCampaign:${id}`)).join(',')})`;
 
+  // BELANGRIJK: dateRange NIET als geheel encodeURIComponent'en — de haakjes/dubbele-punten/
+  // komma's zijn Rest.li's eigen compacte-object-syntax en moeten letterlijk in de query-string
+  // staan (zelfde principe als bij `campaigns=List(...)` hieronder: alleen de URN's erbinnen
+  // worden geëncodeerd, de `List(...)`-haakjes zelf niet). Drie eerdere live-pogingen met deze
+  // regel wél volledig geëncodeerd gaven alledrie exact dezelfde ILLEGAL_ARGUMENT-fout, ook toen
+  // andere delen van de query veranderden — sterke aanwijzing dat dít de blokkade was.
   const params = [
     'q=analytics',
     'pivot=CAMPAIGN',
     'timeGranularity=ALL',
-    `dateRange=${encodeURIComponent(dateRange)}`,
+    `dateRange=${dateRange}`,
     `campaigns=${campaignsList}`,
     `fields=${fields}`,
   ].join('&');
