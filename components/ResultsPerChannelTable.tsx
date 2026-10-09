@@ -84,7 +84,10 @@ export default function ResultsPerChannelTable({ rows, onChange, metricPairs }: 
             </tr>
           </thead>
           <tbody>
-            {rows.map((row) => {
+            {/* Gegroepeerd per kanaal (daarna op campagnenaam) i.p.v. de ruwe invoervolgorde —
+                bewerk-acties (onChange) blijven op de ongesorteerde `rows` werken, dus dit raakt
+                alleen de weergave. */}
+            {[...rows].sort((a, b) => a.kanaal.localeCompare(b.kanaal) || a.campagne.localeCompare(b.campagne)).map((row) => {
               const aAchieved = awarenessFromVolumes(row.achieved);
               const aKpi = awarenessFromKpi(row.kpi);
               return (

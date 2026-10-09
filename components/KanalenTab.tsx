@@ -82,21 +82,33 @@ export default function KanalenTab({ resultRows, rawRows, metricPairs, pacing, o
 
   return (
     <div className="space-y-8">
-      {/* Kanaal- en campagnekeuze */}
-      <div className="flex flex-wrap items-start gap-6">
-        <div>
-          <p className="gf-eyebrow mb-2">Kanaal</p>
-          <select
-            value={selectedKanaal}
-            onChange={(e) => setSelectedKanaal(e.target.value)}
-            className="text-sm font-semibold px-3 py-2"
-            style={{ border: '1px solid #DCE0E6', borderRadius: '6px', color: selectedKanaal ? '#22222D' : '#8C9BAF', background: '#ffffff' }}
-          >
-            <option value="">Kies een kanaal…</option>
-            {kanalen.map((k) => <option key={k} value={k}>{k}</option>)}
-          </select>
+      {/* Kanaalkeuze — altijd alle opties meteen zichtbaar, geen dropdown */}
+      <div>
+        <p className="gf-eyebrow mb-2">Kanaal</p>
+        <div className="flex flex-wrap gap-2">
+          {kanalen.map((k) => {
+            const active = selectedKanaal === k;
+            return (
+              <button
+                key={k}
+                onClick={() => setSelectedKanaal(k)}
+                className="text-sm font-semibold px-4 py-2"
+                style={{
+                  borderRadius: '6px',
+                  background: active ? '#1E3A8A' : '#ffffff',
+                  color: active ? '#ffffff' : '#555E6C',
+                  border: `1px solid ${active ? '#1E3A8A' : '#DCE0E6'}`,
+                }}
+              >
+                {k}
+              </button>
+            );
+          })}
         </div>
-        {selectedKanaal && (
+      </div>
+
+      {/* Campagnekeuze — pas zichtbaar na het kiezen van een kanaal */}
+      {selectedKanaal && (
         <div>
           <p className="gf-eyebrow mb-2">Campagne(s)</p>
           <div className="flex flex-wrap gap-2">
@@ -123,8 +135,7 @@ export default function KanalenTab({ resultRows, rawRows, metricPairs, pacing, o
             })}
           </div>
         </div>
-        )}
-      </div>
+      )}
 
       {!selectedKanaal ? (
         <p className="text-sm" style={{ color: '#8C9BAF' }}>Kies eerst een kanaal hierboven.</p>
@@ -134,17 +145,18 @@ export default function KanalenTab({ resultRows, rawRows, metricPairs, pacing, o
         <>
           <h1 className="gf-display text-2xl" style={{ color: '#22222D' }}>{selectedKanaal}</h1>
 
+          {/* Spend per dag staat bewust bovenaan, vóór alles — het eerste wat je wilt zien */}
+          <div>
+            <h2 className="gf-eyebrow mb-5">Spend per dag</h2>
+            <SpendDailyChart dailyEntities={dailyGroup} />
+          </div>
+
           <div>
             <h2 className="gf-eyebrow mb-5">Budget &amp; pacing</h2>
             <div className="flex flex-wrap items-start gap-4">
               <PacingSummary pacing={pacing} onChange={onChangePacing} achievedSpend={achievedSpend} kpiSpendTotal={kpiSpendTotal} />
               <PacingChart dailyEntities={dailyGroup} pacing={pacing} kpiSpendTotal={kpiSpendTotal} />
             </div>
-          </div>
-
-          <div>
-            <h2 className="gf-eyebrow mb-5">Spend per dag</h2>
-            <SpendDailyChart dailyEntities={dailyGroup} />
           </div>
 
           {activePairs.length > 0 && (
@@ -196,7 +208,7 @@ export default function KanalenTab({ resultRows, rawRows, metricPairs, pacing, o
               {advertentieRows.length === 0 ? (
                 <p className="text-sm" style={{ color: '#8C9BAF' }}>
                   {selectedKanaal === 'LinkedIn'
-                    ? 'Nog geen data — de LinkedIn Ads-koppeling heeft nog geen geldige authenticatie.'
+                    ? 'Nog geen advertentie-niveau voor LinkedIn — alleen campagne-niveau is gekoppeld.'
                     : 'Geen betrouwbare advertentie-uitsplitsing voor deze selectie (zie toelichting in lib/seedDrilldown.ts).'}
                 </p>
               ) : (

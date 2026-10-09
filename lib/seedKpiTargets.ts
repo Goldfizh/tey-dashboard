@@ -70,23 +70,28 @@ interface SeedKpiRow {
   spend: number;
   cpm: number;
   frequency: number;
-  cpc?: number;
+  cpc?: number;  // zet 'clicks' actief naast eventueel 'completedViews' — een rij mag beide tegelijk hebben
   cpcv?: number;
 }
+
+// De 3 Meta-videocampagnes (EB video/Extra video/Skill video) hebben naast hun CPCV-doel óók een
+// CPC-doel ontvangen (2026-10-09) — zonder die target bleven hun échte clicks (die er wel degelijk
+// zijn, zie META_ACHIEVED) buiten de Clicks/CPC-kolommen en dus buiten de opgetelde
+// Totaalresultaten vallen, wat dat totaalbeeld vertekende.
 
 const SEED_KPI_ROWS: SeedKpiRow[] = [
   // ── Naamsbekendheid ──
   { platform: 'linkedin', campagne: 'EB video', spend: 775, cpm: 18.07, frequency: 4, cpc: 5.27 },
-  { platform: 'meta',     campagne: 'EB video', spend: 965, cpm: 5.50,  frequency: 4, cpcv: 0.15 },
+  { platform: 'meta',     campagne: 'EB video', spend: 965, cpm: 5.50,  frequency: 4, cpcv: 0.15, cpc: 5.45 },
   { platform: 'youtube',  campagne: 'EB video', spend: 650, cpm: 4.64,  frequency: 4, cpcv: 0.009 },
 
   // ── Interactie ──
   { platform: 'linkedin', campagne: 'Extra video', spend: 900,  cpm: 18.07, frequency: 4, cpc: 5.27 },
-  { platform: 'meta',     campagne: 'Extra video', spend: 1050, cpm: 5.05,  frequency: 4, cpcv: 0.19 },
+  { platform: 'meta',     campagne: 'Extra video', spend: 1050, cpm: 5.05,  frequency: 4, cpcv: 0.19, cpc: 2.69 },
   { platform: 'youtube',  campagne: 'Extra video', spend: 590,  cpm: 4.37,  frequency: 4, cpcv: 0.007 },
 
   { platform: 'linkedin', campagne: 'Skill video', spend: 1040, cpm: 16.83, frequency: 4, cpc: 4.91 },
-  { platform: 'meta',     campagne: 'Skill video', spend: 950,  cpm: 5.64,  frequency: 4, cpcv: 0.22 },
+  { platform: 'meta',     campagne: 'Skill video', spend: 950,  cpm: 5.64,  frequency: 4, cpcv: 0.22, cpc: 4.88 },
   { platform: 'youtube',  campagne: 'Skill video', spend: 450,  cpm: 2.19,  frequency: 0, cpcv: 0.13 }, // YouTube Shorts — frequentie niet opgegeven in het mediaplan
 
   // ── Verkeer ──

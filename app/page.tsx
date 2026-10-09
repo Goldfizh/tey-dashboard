@@ -160,20 +160,20 @@ export default function DashboardPage() {
   // Volledig handmatig samengesteld (zie buildSeedKpiRows in lib/seedKpiTargets.ts) — geen
   // automatische koppeling met /api/campaigns, zie de toelichting verderop in dit bestand.
   const [resultRows, setResultRows] = useState<ChannelResultRow[]>([]);
-  const [pacing, setPacing] = useState<Pacing>({ startDate: '', endDate: '' });
+  const [pacing, setPacing] = useState<Pacing>({ startDate: '2026-10-01', endDate: '2026-11-30' });
   const [metricPairs, setMetricPairs] = useState<MetricPairDef[]>(DEFAULT_METRIC_PAIRS);
   const [hasLoadedPersisted, setHasLoadedPersisted] = useState(false);
 
   useEffect(() => {
     try {
-      const savedRows = localStorage.getItem('tey_results_rows_v8');
+      const savedRows = localStorage.getItem('tey_results_rows_v9');
       // Eerste bezoek (nog niks opgeslagen): start met de KPI-targets (en, voor Meta, een
       // handmatig opgehaalde achieved-snapshot) uit buildSeedKpiRows() i.p.v. een lege tabel.
       if (savedRows) setResultRows(JSON.parse(savedRows) as ChannelResultRow[]);
       else setResultRows(buildSeedKpiRows());
-      const savedPacing = localStorage.getItem('tey_pacing_v8');
+      const savedPacing = localStorage.getItem('tey_pacing_v9');
       if (savedPacing) setPacing(JSON.parse(savedPacing) as Pacing);
-      const savedMetrics = localStorage.getItem('tey_metric_pairs_v8');
+      const savedMetrics = localStorage.getItem('tey_metric_pairs_v9');
       if (savedMetrics) setMetricPairs(JSON.parse(savedMetrics) as MetricPairDef[]);
     } catch { /* ignore */ }
     setHasLoadedPersisted(true);
@@ -200,9 +200,14 @@ export default function DashboardPage() {
     setLinkedInError(null);
     try {
       const res = await fetch('/api/linkedin/campaigns');
-      const data = await res.json();
-      if (!res.ok) throw new Error((data as { error?: string }).error ?? `HTTP ${res.status}`);
-      setResultRows((prev) => applyAchievedByLabel(prev, 'LinkedIn', data));
+      const data = await res.json() as { achieved?: Record<string, ChannelResultRow['achieved']>; daily?: CampaignRow[]; error?: string };
+      if (!res.ok) throw new Error(data.error ?? `HTTP ${res.status}`);
+      setResultRows((prev) => applyAchievedByLabel(prev, 'LinkedIn', data.achieved ?? {}));
+      // Dag-niveau rijen mergen in `rows` — vervangt eerdere LinkedIn-rijen voor dezelfde
+      // campagnelabels (voorkomt opstapeling bij herhaald verversen), rest blijft staan.
+      const daily = data.daily ?? [];
+      const freshLabels = new Set(daily.map((d) => d.campaign_name));
+      setRows((prev) => [...prev.filter((r) => !(r.platform === 'linkedin' && freshLabels.has(r.campaign_name))), ...daily]);
       setLinkedInStatus('idle');
     } catch (err) {
       setLinkedInStatus('error');
@@ -212,9 +217,9 @@ export default function DashboardPage() {
 
   useEffect(() => { if (hasLoadedPersisted) fetchLinkedIn(); }, [hasLoadedPersisted, fetchLinkedIn]);
 
-  useEffect(() => { if (hasLoadedPersisted) localStorage.setItem('tey_results_rows_v8', JSON.stringify(resultRows)); }, [resultRows, hasLoadedPersisted]);
-  useEffect(() => { if (hasLoadedPersisted) localStorage.setItem('tey_pacing_v8', JSON.stringify(pacing)); }, [pacing, hasLoadedPersisted]);
-  useEffect(() => { if (hasLoadedPersisted) localStorage.setItem('tey_metric_pairs_v8', JSON.stringify(metricPairs)); }, [metricPairs, hasLoadedPersisted]);
+  useEffect(() => { if (hasLoadedPersisted) localStorage.setItem('tey_results_rows_v9', JSON.stringify(resultRows)); }, [resultRows, hasLoadedPersisted]);
+  useEffect(() => { if (hasLoadedPersisted) localStorage.setItem('tey_pacing_v9', JSON.stringify(pacing)); }, [pacing, hasLoadedPersisted]);
+  useEffect(() => { if (hasLoadedPersisted) localStorage.setItem('tey_metric_pairs_v9', JSON.stringify(metricPairs)); }, [metricPairs, hasLoadedPersisted]);
 
   const resultsAchievedSpend = useMemo(
     () => resultRows.reduce((sum, r) => sum + r.achieved.spend, 0),
