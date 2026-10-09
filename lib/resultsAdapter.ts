@@ -126,6 +126,22 @@ export function mergeAchieved(prev: ChannelResultRow[], fresh: ChannelResultRow[
   return merged;
 }
 
+// Ververst `achieved` van specifieke rijen op basis van hun campagnelabel (niet hun id) —
+// voor live gekoppelde kanalen zoals LinkedIn (/api/linkedin/campaigns), waar de respons al
+// precies de bekende campagnelabels als sleutel teruggeeft. Rijen van andere kanalen, en rijen
+// waarvan het label niet in `achievedByLabel` voorkomt, blijven ongemoeid.
+export function applyAchievedByLabel(
+  rows: ChannelResultRow[],
+  kanaal: string,
+  achievedByLabel: Record<string, SpendVolumes>,
+): ChannelResultRow[] {
+  return rows.map((r) => {
+    if (r.kanaal !== kanaal) return r;
+    const fresh = achievedByLabel[r.campagne];
+    return fresh ? { ...r, achieved: fresh } : r;
+  });
+}
+
 export function groupByKanaal(rows: CampaignRow[]): GroupedEntity[] {
   const byPlatform = new Map<Platform, CampaignRow[]>();
   for (const r of rows) {

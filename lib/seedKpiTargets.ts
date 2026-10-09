@@ -29,13 +29,17 @@ const META_CAMPAIGN_SOURCE: Record<string, string> = {
 // 757030574 is GEEN account-ID maar de campagnegroep waaronder alle 3 onderstaande campagnes
 // hangen. Elke rij hieronder is wat Teylingereind zelf "een campagne" noemt — in LinkedIn's eigen
 // hiërarchie is dat een losse Campaign (niet een Campaign Group en niet een Creative).
-const LINKEDIN_CAMPAIGN_SOURCE: Record<string, string> = {
-  'EB video': 'Wervingscampagne 2026 - Interactie - Employer brand merkvideo (klikken) — campaign id 585205134',
-  'Skill video': 'Wervingscampagne 2026 - Interactie - Skill Ads (klikken) — campaign id 583309154',
-  'Extra video': "Wervingscampagne 2026 - Interactie - Extra video's (klikken) — campaign id 584808854",
+//
+// label -> LinkedIn campaign-ID. Gebruikt door app/api/linkedin/campaigns/route.ts (via
+// lib/linkedin.ts) om precies déze 3 campagnes op te halen — niet alle LinkedIn-campagnes van het
+// account (zie de module-comment bovenaan dit bestand over waarom niet automatisch alles mergen).
+export const LINKEDIN_CAMPAIGNS: Record<string, string> = {
+  'EB video': '585205134',             // Wervingscampagne 2026 - Interactie - Employer brand merkvideo (klikken)
+  'Skill video': '583309154',          // Wervingscampagne 2026 - Interactie - Skill Ads (klikken)
+  'Extra video': '584808854',          // Wervingscampagne 2026 - Interactie - Extra video's (klikken)
+  'Persoonlijke verhalen': '901424154', // Medewerkers verhalen — 4e advertentieset onder campagnegroep "Employer branding klikken" (757030574)
 };
 void META_CAMPAIGN_SOURCE;
-void LINKEDIN_CAMPAIGN_SOURCE;
 
 // Meta-achieved: live opgehaald op 2026-10-02 via de Meta Ads-connector (account
 // act_913728597234821, "Forensisch Centrum Teylingereind"), gescopet op 2026-10-01 t/m
@@ -50,12 +54,13 @@ const META_ACHIEVED: Record<string, AchievedMetrics> = {
   'Persoonlijke verhalen':  { spend: 17.72, volumes: { impressions: 1920, reach: 1756, clicks: 73,                      conversions: 0 } },
 };
 
-// LinkedIn: geen achieved op te halen — account 513737683 staat inmiddels in de Marketing
-// Developer Platform-productinstellingen van de app, maar de connector heeft nog geen geldig
-// OAuth-token (dezelfde generieke authenticatiefout, ongeacht welk account-ID aangeroepen wordt —
-// getest op 2026-10-03 met zowel 757030574 als 513737683). Blijft op 0 tot er een Access/Refresh
-// Token (scopes r_ads, r_ads_reporting) in de connector-configuratie staat. YouTube: koppeling
-// moet nog gebouwd worden (geen databron bekend), ook op 0.
+// LinkedIn: live gekoppeld via app/api/linkedin/campaigns/route.ts (lib/linkedin.ts), rechtstreeks
+// de LinkedIn Marketing API — geen statische snapshot zoals bij Meta. `achieved` in
+// buildSeedKpiRows() blijft hieronder op 0 (als placeholder bij de eerste render); de echte cijfers
+// komen er na het laden overheen via applyAchievedByLabel() in app/page.tsx. Op 2026-10-05 gaf een
+// eerder token "REVOKED_ACCESS_TOKEN" terug — op 2026-10-09 is een nieuwe OAuth-verbinding gemaakt,
+// nog te bevestigen of die werkt. YouTube: koppeling moet nog gebouwd worden (geen databron
+// bekend), blijft op 0.
 
 interface SeedKpiRow {
   platform: Platform;
@@ -82,8 +87,11 @@ const SEED_KPI_ROWS: SeedKpiRow[] = [
   { platform: 'meta',     campagne: 'Skill video', spend: 950,  cpm: 5.64,  frequency: 4, cpcv: 0.22 },
   { platform: 'youtube',  campagne: 'Skill video', spend: 450,  cpm: 2.19,  frequency: 0, cpcv: 0.13 }, // YouTube Shorts — frequentie niet opgegeven in het mediaplan
 
-  // ── Verkeer ── (alleen Meta heeft hier een campagne)
+  // ── Verkeer ──
   { platform: 'meta', campagne: 'Persoonlijke verhalen', spend: 845, cpm: 9.00, frequency: 4, cpc: 0.45 },
+  // LinkedIn "Persoonlijke verhalen" (Medewerkers verhalen, id 901424154): nog geen KPI-target uit
+  // een mediaplan ontvangen — spend/cpm/cpc staan voorlopig op 0 totdat die cijfers er zijn.
+  { platform: 'linkedin', campagne: 'Persoonlijke verhalen', spend: 0, cpm: 0, frequency: 0, cpc: 0 },
 ];
 
 export function buildSeedKpiRows(): ChannelResultRow[] {

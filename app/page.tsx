@@ -12,6 +12,7 @@ import SollicitatiesSection from '@/components/SollicitatiesSection';
 import type { ChannelResultRow, MetricPairDef, Pacing } from '@/types/results';
 import { DEFAULT_METRIC_PAIRS, kpiToSpendVolumes, sumSpendVolumes } from '@/types/results';
 import { buildSeedKpiRows } from '@/lib/seedKpiTargets';
+import { applyAchievedByLabel } from '@/lib/resultsAdapter';
 import type { CampaignRow } from '@/types/campaign';
 import { sumRows } from '@/types/campaign';
 import type { ConversionBySource, ConversionByJob, ApplicationStart } from '@/lib/analytics';
@@ -165,14 +166,14 @@ export default function DashboardPage() {
 
   useEffect(() => {
     try {
-      const savedRows = localStorage.getItem('tey_results_rows_v5');
+      const savedRows = localStorage.getItem('tey_results_rows_v6');
       // Eerste bezoek (nog niks opgeslagen): start met de KPI-targets (en, voor Meta, een
       // handmatig opgehaalde achieved-snapshot) uit buildSeedKpiRows() i.p.v. een lege tabel.
       if (savedRows) setResultRows(JSON.parse(savedRows) as ChannelResultRow[]);
       else setResultRows(buildSeedKpiRows());
-      const savedPacing = localStorage.getItem('tey_pacing_v5');
+      const savedPacing = localStorage.getItem('tey_pacing_v6');
       if (savedPacing) setPacing(JSON.parse(savedPacing) as Pacing);
-      const savedMetrics = localStorage.getItem('tey_metric_pairs_v5');
+      const savedMetrics = localStorage.getItem('tey_metric_pairs_v6');
       if (savedMetrics) setMetricPairs(JSON.parse(savedMetrics) as MetricPairDef[]);
     } catch { /* ignore */ }
     setHasLoadedPersisted(true);
@@ -187,9 +188,33 @@ export default function DashboardPage() {
   // achieved-snapshot) — geen automatische koppeling meer, tot er per kanaal een nette 1-op-1
   // koppeling (mediaplan-campagne -> echte advertentie-entiteit) is gebouwd.
 
-  useEffect(() => { if (hasLoadedPersisted) localStorage.setItem('tey_results_rows_v5', JSON.stringify(resultRows)); }, [resultRows, hasLoadedPersisted]);
-  useEffect(() => { if (hasLoadedPersisted) localStorage.setItem('tey_pacing_v5', JSON.stringify(pacing)); }, [pacing, hasLoadedPersisted]);
-  useEffect(() => { if (hasLoadedPersisted) localStorage.setItem('tey_metric_pairs_v5', JSON.stringify(metricPairs)); }, [metricPairs, hasLoadedPersisted]);
+  // LinkedIn is wél live gekoppeld (/api/linkedin/campaigns, rechtstreeks de LinkedIn Marketing
+  // API — zie lib/linkedin.ts), gescopet op precies de 3 bekende campagnes. De respons komt al
+  // gekeyed op campagnelabel terug, dus hier is geen naam-matching nodig — alleen de 3
+  // bijbehorende rijen worden ververst, de rest van resultRows blijft ongemoeid.
+  const [linkedInStatus, setLinkedInStatus] = useState<'idle' | 'loading' | 'error'>('idle');
+  const [linkedInError, setLinkedInError] = useState<string | null>(null);
+
+  const fetchLinkedIn = useCallback(async () => {
+    setLinkedInStatus('loading');
+    setLinkedInError(null);
+    try {
+      const res = await fetch('/api/linkedin/campaigns');
+      const data = await res.json();
+      if (!res.ok) throw new Error((data as { error?: string }).error ?? `HTTP ${res.status}`);
+      setResultRows((prev) => applyAchievedByLabel(prev, 'LinkedIn', data));
+      setLinkedInStatus('idle');
+    } catch (err) {
+      setLinkedInStatus('error');
+      setLinkedInError(err instanceof Error ? err.message : 'Onbekende fout bij het laden van LinkedIn-data');
+    }
+  }, []);
+
+  useEffect(() => { if (hasLoadedPersisted) fetchLinkedIn(); }, [hasLoadedPersisted, fetchLinkedIn]);
+
+  useEffect(() => { if (hasLoadedPersisted) localStorage.setItem('tey_results_rows_v6', JSON.stringify(resultRows)); }, [resultRows, hasLoadedPersisted]);
+  useEffect(() => { if (hasLoadedPersisted) localStorage.setItem('tey_pacing_v6', JSON.stringify(pacing)); }, [pacing, hasLoadedPersisted]);
+  useEffect(() => { if (hasLoadedPersisted) localStorage.setItem('tey_metric_pairs_v6', JSON.stringify(metricPairs)); }, [metricPairs, hasLoadedPersisted]);
 
   const resultsAchievedSpend = useMemo(
     () => resultRows.reduce((sum, r) => sum + r.achieved.spend, 0),
@@ -252,7 +277,7 @@ export default function DashboardPage() {
           {/* Vernieuwen — right */}
           <div className="flex justify-end">
             <button
-              onClick={fetchData}
+              onClick={() => { fetchData(); fetchLinkedIn(); }}
               disabled={loading}
               className="text-sm font-semibold disabled:opacity-40 transition-colors px-5 py-2 rounded-lg"
               style={{ background: '#1E3A8A', color: '#ffffff' }}
@@ -273,6 +298,13 @@ export default function DashboardPage() {
           <div className="mb-6 text-sm px-4 py-3 rounded-lg" style={{ background: '#FEF2F2', color: '#B42318', border: '1px solid #FCA5A5' }}>
             {error}
             <button onClick={fetchData} className="ml-2 font-semibold underline">Opnieuw proberen</button>
+          </div>
+        )}
+
+        {linkedInStatus === 'error' && (
+          <div className="mb-6 text-sm px-4 py-3 rounded-lg" style={{ background: '#FEF2F2', color: '#B42318', border: '1px solid #FCA5A5' }}>
+            LinkedIn: {linkedInError}
+            <button onClick={fetchLinkedIn} className="ml-2 font-semibold underline">Opnieuw proberen</button>
           </div>
         )}
 
