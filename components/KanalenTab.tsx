@@ -4,7 +4,6 @@ import { useEffect, useMemo, useState } from 'react';
 import PacingSummary from '@/components/PacingSummary';
 import PacingChart from '@/components/PacingChart';
 import GoalDailyChart from '@/components/GoalDailyChart';
-import SpendDailyChart from '@/components/SpendDailyChart';
 import TotalsResultsTable from '@/components/TotalsResultsTable';
 import CommentsTable from '@/components/CommentsTable';
 import MetricsFlatTable from '@/components/MetricsFlatTable';
@@ -144,12 +143,6 @@ export default function KanalenTab({ resultRows, rawRows, metricPairs, pacing, o
       ) : (
         <>
           <h1 className="gf-display text-2xl" style={{ color: '#22222D' }}>{selectedKanaal}</h1>
-
-          {/* Spend per dag staat bewust bovenaan, vóór alles — het eerste wat je wilt zien */}
-          <div>
-            <h2 className="gf-eyebrow mb-5">Spend per dag</h2>
-            <SpendDailyChart dailyEntities={dailyGroup} />
-          </div>
 
           <div>
             <h2 className="gf-eyebrow mb-5">Budget &amp; pacing</h2>
