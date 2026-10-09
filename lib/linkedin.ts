@@ -20,7 +20,7 @@
 
 import type { AchievedMetrics } from '@/types/results';
 
-const LINKEDIN_API_VERSION = '202610'; // LinkedIn-Version header (YYYYMM) — LinkedIn verplicht dit en ververst de ondersteunde versies periodiek
+const LINKEDIN_API_VERSION = '202609'; // LinkedIn-Version header (YYYYMM) — LinkedIn verplicht dit en ververst de ondersteunde versies periodiek
 
 export interface LinkedInCampaignResult {
   campaignId: string;
