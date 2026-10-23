@@ -174,10 +174,19 @@ export default function DashboardPage() {
   useEffect(() => {
     try {
       const savedRows = localStorage.getItem('tey_results_rows_v9');
-      // Eerste bezoek (nog niks opgeslagen): start met de KPI-targets (en, voor Meta, een
-      // handmatig opgehaalde achieved-snapshot) uit buildSeedKpiRows() i.p.v. een lege tabel.
-      if (savedRows) setResultRows(JSON.parse(savedRows) as ChannelResultRow[]);
-      else setResultRows(buildSeedKpiRows());
+      // Eerste bezoek (nog niks opgeslagen): start met de KPI-targets uit buildSeedKpiRows()
+      // i.p.v. een lege tabel. Bij een bestaand bezoek: campagnes die ná dat eerste bezoek aan
+      // SEED_KPI_ROWS zijn toegevoegd (bv. Vacatures/Informatieavond, 2026-10-23) staan nog niet
+      // in de opgeslagen array — die missende rijen alsnog toevoegen, zonder de bestaande rijen
+      // (met eventuele handmatige KPI-aanpassingen/opmerkingen) aan te raken.
+      if (savedRows) {
+        const existing = JSON.parse(savedRows) as ChannelResultRow[];
+        const existingIds = new Set(existing.map((r) => r.id));
+        const newRows = buildSeedKpiRows().filter((r) => !existingIds.has(r.id));
+        setResultRows(newRows.length > 0 ? [...existing, ...newRows] : existing);
+      } else {
+        setResultRows(buildSeedKpiRows());
+      }
       const savedPacing = localStorage.getItem('tey_pacing_v9');
       if (savedPacing) setPacing(JSON.parse(savedPacing) as Pacing);
       const savedMetrics = localStorage.getItem('tey_metric_pairs_v9');

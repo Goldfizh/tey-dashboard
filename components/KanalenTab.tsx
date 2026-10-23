@@ -8,11 +8,15 @@ import TotalsResultsTable from '@/components/TotalsResultsTable';
 import CommentsTable from '@/components/CommentsTable';
 import MetricsFlatTable from '@/components/MetricsFlatTable';
 import ComparisonTool from '@/components/ComparisonTool';
-import type { ChannelResultRow, MetricPairDef, Pacing } from '@/types/results';
+import type { ChannelResultRow, MetricPairDef, Pacing, SpendVolumes } from '@/types/results';
 import { kpiToSpendVolumes, sumSpendVolumes } from '@/types/results';
 import type { CampaignRow } from '@/types/campaign';
 import { buildDailyEntities, buildRawGroups } from '@/lib/resultsAdapter';
-import { META_DRILLDOWN } from '@/lib/seedDrilldown';
+
+interface DrilldownRow {
+  label: string;
+  metrics: SpendVolumes;
+}
 
 interface Props {
   resultRows: ChannelResultRow[]; // alle campagnes, alle actieve kanalen
@@ -49,7 +53,7 @@ export default function KanalenTab({ resultRows, rawRows, metricPairs, pacing, o
     });
   }
 
-  const selected = campagnes.filter((c) => selectedIds.has(c.id));
+  const selected = useMemo(() => campagnes.filter((c) => selectedIds.has(c.id)), [campagnes, selectedIds]);
   const activePairs = metricPairs.filter((p) => selected.some((r) => r.activePairKeys.includes(p.key)));
   const achievedSpend = selected.reduce((s, r) => s + r.achieved.spend, 0);
   const kpiSpendTotal = sumSpendVolumes(selected.map((r) => kpiToSpendVolumes(r.kpi, activePairs))).spend;
@@ -60,24 +64,42 @@ export default function KanalenTab({ resultRows, rawRows, metricPairs, pacing, o
     return buildDailyEntities(rows);
   }, [selected, rawGroups]);
 
-  // Doelgroep-/advertentieniveau — alleen voor Meta (zie lib/seedDrilldown.ts voor de aannames
-  // en beperkingen). LinkedIn koopt per advertentieset in (dus geen apart doelgroepniveau nodig)
-  // en heeft nog geen werkende databron; YouTube heeft geen van beide niveaus.
+  // Doelgroep-/advertentieniveau — live via /api/meta/breakdown (lib/meta.ts, rechtstreeks de
+  // Graph API), alleen voor Meta. LinkedIn koopt per advertentieset in (dus geen apart
+  // doelgroepniveau nodig) en heeft nog geen werkende databron op dit niveau; YouTube heeft geen
+  // van beide niveaus. Gescopet op exact de geselecteerde campagne(s) — wisselt de selectie, dan
+  // ververst dit automatisch mee, dus geen data van niet-geselecteerde campagnes lekt hierin door.
   const multiSelected = selected.length > 1;
-  const doelgroepRows = useMemo(() => {
-    if (selectedKanaal !== 'Meta') return [];
-    return selected.flatMap((c) => {
-      const rows = META_DRILLDOWN[c.campagne]?.doelgroepen ?? [];
-      return rows.map((r) => ({ label: multiSelected ? `${c.campagne} — ${r.label}` : r.label, metrics: r.metrics }));
+  const [breakdown, setBreakdown] = useState<{ doelgroep: DrilldownRow[]; advertentie: DrilldownRow[]; status: 'idle' | 'loading' | 'error'; error?: string }>({
+    doelgroep: [], advertentie: [], status: 'idle',
+  });
+
+  useEffect(() => {
+    if (selectedKanaal !== 'Meta' || selected.length === 0) {
+      setBreakdown({ doelgroep: [], advertentie: [], status: 'idle' });
+      return;
+    }
+    let cancelled = false;
+    setBreakdown((prev) => ({ ...prev, status: 'loading' }));
+    const campagneParam = encodeURIComponent(selected.map((c) => c.campagne).join(','));
+    const toRows = (rows: { campagne: string; name: string; achieved: SpendVolumes }[]): DrilldownRow[] =>
+      rows.map((r) => ({ label: multiSelected ? `${r.campagne} — ${r.name}` : r.name, metrics: r.achieved }));
+
+    Promise.all([
+      fetch(`/api/meta/breakdown?level=adset&campagnes=${campagneParam}`).then((r) => r.json()),
+      fetch(`/api/meta/breakdown?level=ad&campagnes=${campagneParam}`).then((r) => r.json()),
+    ]).then(([adsetRes, adRes]: [{ rows?: { campagne: string; name: string; achieved: SpendVolumes }[]; error?: string }, { rows?: { campagne: string; name: string; achieved: SpendVolumes }[]; error?: string }]) => {
+      if (cancelled) return;
+      if (adsetRes.error || adRes.error) {
+        setBreakdown({ doelgroep: [], advertentie: [], status: 'error', error: adsetRes.error ?? adRes.error });
+        return;
+      }
+      setBreakdown({ doelgroep: toRows(adsetRes.rows ?? []), advertentie: toRows(adRes.rows ?? []), status: 'idle' });
+    }).catch((err) => {
+      if (!cancelled) setBreakdown({ doelgroep: [], advertentie: [], status: 'error', error: err instanceof Error ? err.message : 'Onbekende fout' });
     });
-  }, [selected, selectedKanaal, multiSelected]);
-  const advertentieRows = useMemo(() => {
-    if (selectedKanaal !== 'Meta') return [];
-    return selected.flatMap((c) => {
-      const rows = META_DRILLDOWN[c.campagne]?.advertenties ?? [];
-      return rows.map((r) => ({ label: multiSelected ? `${c.campagne} — ${r.label}` : r.label, metrics: r.metrics }));
-    });
-  }, [selected, selectedKanaal, multiSelected]);
+    return () => { cancelled = true; };
+  }, [selectedKanaal, selected, multiSelected]);
 
   return (
     <div className="space-y-8">
@@ -185,12 +207,14 @@ export default function KanalenTab({ resultRows, rawRows, metricPairs, pacing, o
           {selectedKanaal === 'Meta' && (
             <div>
               <h2 className="gf-eyebrow mb-5">Resultaten per doelgroep</h2>
-              {doelgroepRows.length === 0 ? (
-                <p className="text-sm" style={{ color: '#8C9BAF' }}>
-                  Geen betrouwbare doelgroep-uitsplitsing voor deze selectie (zie toelichting in lib/seedDrilldown.ts).
-                </p>
+              {breakdown.status === 'error' ? (
+                <p className="text-sm" style={{ color: '#B42318' }}>Meta: {breakdown.error}</p>
+              ) : breakdown.status === 'loading' ? (
+                <p className="text-sm" style={{ color: '#8C9BAF' }}>Laden…</p>
+              ) : breakdown.doelgroep.length === 0 ? (
+                <p className="text-sm" style={{ color: '#8C9BAF' }}>Geen doelgroep-data voor deze selectie.</p>
               ) : (
-                <MetricsFlatTable labelHeader="Doelgroep" entities={doelgroepRows} metricPairs={activePairs} />
+                <MetricsFlatTable labelHeader="Doelgroep" entities={breakdown.doelgroep} metricPairs={activePairs} />
               )}
             </div>
           )}
@@ -198,14 +222,18 @@ export default function KanalenTab({ resultRows, rawRows, metricPairs, pacing, o
           {(selectedKanaal === 'Meta' || selectedKanaal === 'LinkedIn') && (
             <div>
               <h2 className="gf-eyebrow mb-5">Resultaten per advertentie</h2>
-              {advertentieRows.length === 0 ? (
+              {selectedKanaal === 'LinkedIn' ? (
                 <p className="text-sm" style={{ color: '#8C9BAF' }}>
-                  {selectedKanaal === 'LinkedIn'
-                    ? 'Nog geen advertentie-niveau voor LinkedIn — alleen campagne-niveau is gekoppeld.'
-                    : 'Geen betrouwbare advertentie-uitsplitsing voor deze selectie (zie toelichting in lib/seedDrilldown.ts).'}
+                  Nog geen advertentie-niveau voor LinkedIn — alleen campagne-niveau is gekoppeld.
                 </p>
+              ) : breakdown.status === 'error' ? (
+                <p className="text-sm" style={{ color: '#B42318' }}>Meta: {breakdown.error}</p>
+              ) : breakdown.status === 'loading' ? (
+                <p className="text-sm" style={{ color: '#8C9BAF' }}>Laden…</p>
+              ) : breakdown.advertentie.length === 0 ? (
+                <p className="text-sm" style={{ color: '#8C9BAF' }}>Geen advertentie-data voor deze selectie.</p>
               ) : (
-                <MetricsFlatTable labelHeader="Advertentie" entities={advertentieRows} metricPairs={activePairs} />
+                <MetricsFlatTable labelHeader="Advertentie" entities={breakdown.advertentie} metricPairs={activePairs} />
               )}
             </div>
           )}

@@ -35,13 +35,16 @@ export const LINKEDIN_CAMPAIGNS: Record<string, string> = {
 
 // Meta-advertentieaccount van Teylingereind: 913728597234821 ("Forensisch Centrum
 // Teylingereind", env var META_AD_ACCOUNT_ID). label -> Meta campaign-ID. Gebruikt door
-// app/api/meta/campaigns/route.ts (via lib/meta.ts) om precies déze 4 campagnes op te halen,
-// rechtstreeks via de Graph API — niet meer via de handmatige chat-connector-snapshot.
+// app/api/meta/campaigns/route.ts en app/api/meta/breakdown/route.ts (via lib/meta.ts) om precies
+// déze campagnes op te halen, rechtstreeks via de Graph API — niet meer via de handmatige
+// chat-connector-snapshot.
 export const META_CAMPAIGNS: Record<string, string> = {
   'EB video': '120243062630350642',              // Employer Branding 2026 | Interactie | Employer brand video | Always on
   'Skill video': '120243066967440642',           // Employer Branding 2026 | Interactie | Skill Ad | Always on
   'Extra video': '120243077768790642',           // Employer Branding 2026 | Interactie | Extra video's | Always on
   'Persoonlijke verhalen': '120251198804710642', // Employer Branding 2026 | Verkeer | Medewerkersverhalen | Always on
+  'Vacatures': '120241528532830642',             // Teylingereind | Vacatures | Always on
+  'Informatieavond': '120223179012160642',       // Teylingereind | Informatieavond | Always on
 };
 
 // LinkedIn en Meta: beide live gekoppeld via hun eigen /api/*/campaigns-route (lib/linkedin.ts,
@@ -56,8 +59,9 @@ interface SeedKpiRow {
   spend: number;
   cpm: number;
   frequency: number;
-  cpc?: number;  // zet 'clicks' actief naast eventueel 'completedViews' — een rij mag beide tegelijk hebben
+  cpc?: number;  // zet 'clicks' actief naast eventueel 'completedViews'/'cpa' — een rij mag er meerdere tegelijk hebben
   cpcv?: number;
+  cpa?: number;  // cost per lead — zet 'conversions' actief
 }
 
 // De 3 Meta-videocampagnes (EB video/Extra video/Skill video) hebben naast hun CPCV-doel óók een
@@ -83,6 +87,13 @@ const SEED_KPI_ROWS: SeedKpiRow[] = [
   { platform: 'meta', campagne: 'Persoonlijke verhalen', spend: 845, cpm: 9.00, frequency: 4, cpc: 0.45 },
   // LinkedIn "Persoonlijke verhalen" (Medewerkers verhalen, id 901424154) — KPI-target ontvangen op 2026-10-09.
   { platform: 'linkedin', campagne: 'Persoonlijke verhalen', spend: 845, cpm: 20.00, frequency: 4, cpc: 4.50 },
+
+  // ── Leads (always-on wervingscampagnes, los van het Q4-mediaplan hierboven) ──
+  // Toegevoegd op 2026-10-23. Beide zijn Meta OUTCOME_LEADS-campagnes; "Cost per lead" is Meta's
+  // eigen "sollicitatie voltooid"-resultaat (zie submitApplicationConversions in lib/meta.ts voor
+  // hoe dat afgeleid wordt). Frequentie niet opgegeven — blijft op 0 (Bereik dus niet afgeleid).
+  { platform: 'meta', campagne: 'Informatieavond', spend: 5000, cpm: 12.49, frequency: 0, cpc: 1.16, cpa: 206.17 },
+  { platform: 'meta', campagne: 'Vacatures',       spend: 1000, cpm: 11.21, frequency: 0, cpc: 1.21, cpa: 83.38 },
 ];
 
 export function buildSeedKpiRows(): ChannelResultRow[] {
@@ -91,6 +102,7 @@ export function buildSeedKpiRows(): ChannelResultRow[] {
     const activePairKeys: string[] = [];
     if (r.cpc !== undefined) { costs.clicks = r.cpc; activePairKeys.push('clicks'); }
     if (r.cpcv !== undefined) { costs.completedViews = r.cpcv; activePairKeys.push('completedViews'); }
+    if (r.cpa !== undefined) { costs.conversions = r.cpa; activePairKeys.push('conversions'); }
     return {
       id: `${r.platform}__${slugify(r.campagne)}`,
       kanaal: PLATFORM_LABEL[r.platform],
