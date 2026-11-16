@@ -31,6 +31,7 @@ export const LINKEDIN_CAMPAIGNS: Record<string, string> = {
   'Skill video': '583309154',          // Wervingscampagne 2026 - Interactie - Skill Ads (klikken)
   'Extra video': '584808854',          // Wervingscampagne 2026 - Interactie - Extra video's (klikken)
   'Persoonlijke verhalen': '901424154', // Medewerkers verhalen — 4e advertentieset onder campagnegroep "Employer branding klikken" (757030574)
+  'Informatieavond': '906257954',      // Wervingscampagne 2026 - Verkeer - Informatieavond — toegevoegd op 2026-11-16
 };
 
 // Meta-advertentieaccount van Teylingereind: 913728597234821 ("Forensisch Centrum
@@ -87,6 +88,10 @@ const SEED_KPI_ROWS: SeedKpiRow[] = [
   { platform: 'meta', campagne: 'Persoonlijke verhalen', spend: 845, cpm: 9.00, frequency: 4, cpc: 0.45 },
   // LinkedIn "Persoonlijke verhalen" (Medewerkers verhalen, id 901424154) — KPI-target ontvangen op 2026-10-09.
   { platform: 'linkedin', campagne: 'Persoonlijke verhalen', spend: 845, cpm: 20.00, frequency: 4, cpc: 4.50 },
+  // LinkedIn "Informatieavond" (Wervingscampagne 2026 - Verkeer - Informatieavond, id 906257954)
+  // — toegevoegd op 2026-11-16. Zelfde cpm/cpc als de andere Verkeer-campagne op LinkedIn
+  // (Persoonlijke verhalen hierboven) — geen eigen KPI's opgegeven, alleen budget.
+  { platform: 'linkedin', campagne: 'Informatieavond', spend: 485, cpm: 20.00, frequency: 4, cpc: 4.50 },
 
   // ── Leads (always-on wervingscampagnes, los van het Q4-mediaplan hierboven) ──
   // Toegevoegd op 2026-10-23. Beide zijn Meta OUTCOME_LEADS-campagnes; "Cost per lead" is Meta's
