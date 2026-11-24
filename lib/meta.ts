@@ -31,7 +31,7 @@ interface MetaInsightRow {
   clicks?: string;
   reach?: string;
   actions?: MetaAction[];
-  cost_per_action_type?: MetaAction[];
+  video_thruplay_watched_actions?: MetaAction[];
   date_start?: string;
 }
 
@@ -44,40 +44,44 @@ function actionValue(actions: MetaAction[] | undefined, type: string): number {
   return match ? Number(match.value) : 0;
 }
 
-// De sollicitatie-conversie voor de lead-campagnes (Vacatures/Informatieavond, zie
-// META_CAMPAIGNS) zit — contra-intuïtief — NIET in `actions`, alleen in `cost_per_action_type`
-// (geverifieerd met directe Graph API-calls op 2026-10-23: de actie "offsite_submit_
-// application_add_meta_leads"/"..._add_20_s_calls" ontbreekt volledig in `actions`, maar staat wél
-// in `cost_per_action_type`, exact gelijk aan spend ÷ aantal — dit is kennelijk een door Meta zelf
-// samengevoegde/gemodelleerde resultaatcategorie i.p.v. een letterlijke pixel-actie, vergelijkbaar
-// met hoe Ads Manager's "Resultaten"-kolom werkt). Aantal conversies wordt daarom afgeleid als
-// spend ÷ cost_per_action — in de 2 steekproeven was dat exact een heel getal (225.13/15.008667=15,
-// 1082.87/37.340345=29). Voor de oudere campagnes (geen lead-doelstelling) staat deze actie niet in
-// cost_per_action_type, dus blijft conversions daar gewoon op 0.
-function submitApplicationConversions(spend: number, costPerActionType: MetaAction[] | undefined): number {
-  const entry = costPerActionType?.find((a) => a.action_type.includes('submit_application'));
-  const cost = entry ? Number(entry.value) : 0;
-  return cost > 0 ? Math.round(spend / cost) : 0;
+// Per lead-campagne (zie META_CAMPAIGNS) het echte custom-conversion-ID dat bij die campagne hoort
+// — NIET hetzelfde event voor alle leadcampagnes. Ontdekt op 2026-11-24 bij het uitzoeken van een
+// Meta Ads Manager-export (met per-event-naam kolommen) naast de live API: de generieke aanpak die
+// hier eerder stond (spend ÷ cost_per_action_type's "submit_application"-bucket) bleek impliciet
+// altijd "Sollicitatie_voltooid_recruitee_1" te pakken (Meta's eigen SUBMIT_APPLICATION-categorie,
+// zie act_.../customconversions), ook voor Informatieavond — terwijl dat event daar he­lemaal niet
+// de juiste KPI is: die campagne wil "Aanmelding_afgerond_informatieavond" (bevestigde aanmelding
+// voor de informatieavond), een apart, eigen custom-conversion-event. Vandaar nu per campagne-ID
+// het juiste event expliciet, en rechtstreeks geteld via `actions` (geen afgeleide deling meer).
+const LEAD_EVENT_BY_CAMPAIGN: Record<string, string> = {
+  '120223179012160642': '1439285254624385', // Informatieavond -> Aanmelding_afgerond_informatieavond
+  '120241528532830642': '1500800018510624', // Vacatures -> Sollicitatie_voltooid_recruitee_1
+};
+
+function leadConversions(campaignId: string | undefined, actions: MetaAction[] | undefined): number {
+  const customConversionId = campaignId ? LEAD_EVENT_BY_CAMPAIGN[campaignId] : undefined;
+  if (!customConversionId) return 0;
+  return actionValue(actions, `offsite_conversion.custom.${customConversionId}`);
 }
 
 function achievedFromRow(r: MetaInsightRow): AchievedMetrics {
-  const spend = Number(r.spend ?? 0);
   return {
-    spend,
+    spend: Number(r.spend ?? 0),
     volumes: {
       impressions: Number(r.impressions ?? 0),
       reach: Number(r.reach ?? 0),
       clicks: Number(r.clicks ?? 0),
-      // `video_view` = Meta's 3-seconden-view-actie, dezelfde proxy voor "voltooide view" die ook
-      // al gebruikt werd in de voormalige handmatige META_ACHIEVED-snapshot (geen exacte
-      // thruplay-telling).
-      completedViews: actionValue(r.actions, 'video_view'),
-      conversions: submitApplicationConversions(spend, r.cost_per_action_type),
+      // ThruPlay (15 sec, `video_thruplay_watched_actions`) — Meta's eigen "Resultaten"-indicator
+      // voor de video-campagnes (geverifieerd via Ads Manager-export 2026-11-24), een eigen
+      // Insights-veld los van `actions`. Vervangt de eerdere 3-seconden `video_view`-proxy (minder
+      // nauwkeurig, en niet wat het mediaplan's CPCV-target bedoelde).
+      completedViews: actionValue(r.video_thruplay_watched_actions, 'video_view'),
+      conversions: leadConversions(r.campaign_id, r.actions),
     },
   };
 }
 
-const BASE_FIELDS = ['campaign_id', 'spend', 'impressions', 'clicks', 'reach', 'actions', 'cost_per_action_type'];
+const BASE_FIELDS = ['campaign_id', 'spend', 'impressions', 'clicks', 'reach', 'actions', 'video_thruplay_watched_actions'];
 
 async function fetchMetaInsights(
   campaignIds: string[],
