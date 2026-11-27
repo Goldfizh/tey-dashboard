@@ -50,11 +50,22 @@ export const META_CAMPAIGNS: Record<string, string> = {
   'Doorgroeimogelijkheden': '120252186575610642', // Employer Branding 2026 | Verkeer | Doorgroeimogelijkheden | Always on — toegevoegd op 2026-11-27
 };
 
-// LinkedIn en Meta: beide live gekoppeld via hun eigen /api/*/campaigns-route (lib/linkedin.ts,
-// lib/meta.ts), rechtstreeks de bijbehorende Marketing API — geen statische snapshot meer. De
-// `achieved`-waarden in buildSeedKpiRows() blijven hieronder op 0 (placeholder bij eerste render);
-// de echte cijfers komen er na het laden overheen via applyAchievedByLabel() in app/page.tsx.
-// YouTube: koppeling moet nog gebouwd worden (geen databron bekend), blijft op 0.
+// Google Ads-klantaccount van Teylingereind: 1437870539 (env var GOOGLE_ADS_CUSTOMER_ID), onder
+// MCC-manageraccount GoldfiZh (env var GOOGLE_ADS_LOGIN_CUSTOMER_ID). label -> Google Ads
+// campaign-ID van de 3 VIDEO-campagnes (de rest van dit account is Search/SEA, hoort hier niet
+// bij). Gebruikt door app/api/youtube/campaigns/route.ts (via lib/googleads.ts), rechtstreeks de
+// Google Ads API — toegevoegd op 2026-11-27.
+export const YOUTUBE_CAMPAIGNS: Record<string, string> = {
+  'EB video':    '23747856897', // Employer Branding - Employer brand video Q2
+  'Skill video': '23757742981', // Employer Branding - Skill ads Q2
+  'Extra video': '23758010392', // Employer Branding - Extra video's Q2
+};
+
+// LinkedIn, Meta en YouTube: alle drie live gekoppeld via hun eigen /api/*/campaigns-route
+// (lib/linkedin.ts, lib/meta.ts, lib/googleads.ts), rechtstreeks de bijbehorende API — geen
+// statische snapshot. De `achieved`-waarden in buildSeedKpiRows() blijven hieronder op 0
+// (placeholder bij eerste render); de echte cijfers komen er na het laden overheen via
+// applyAchievedByLabel() in app/page.tsx.
 
 interface SeedKpiRow {
   platform: Platform;

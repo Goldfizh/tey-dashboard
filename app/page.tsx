@@ -77,16 +77,18 @@ export default function DashboardPage() {
         const json = await campaignsRes.json().catch(() => ({}));
         throw new Error((json as { error?: string }).error ?? `HTTP ${campaignsRes.status}`);
       }
-      // LinkedIn en Meta uit de Sheets-feed worden genegeerd — allebei hebben nu hun eigen live
-      // databron (fetchLinkedIn/fetchMeta, rechtstreeks de LinkedIn/Meta API). Zonder deze filter
-      // plus de merge hieronder (i.p.v. vervangen) kon deze fetch, als hij ná fetchLinkedIn/
-      // fetchMeta afrondde, de net opgehaalde dag-rijen weer overschrijven met de verouderde
-      // Sheets-versie (die voor Meta bovendien alleen april-juni 2026 dekt, niet de huidige
-      // periode) — de oorzaak van de lege dag-grafieken in Kanalen ondanks correcte API-data.
+      // LinkedIn, Meta en YouTube uit de Sheets-feed worden genegeerd — alle drie hebben nu hun
+      // eigen live databron (fetchLinkedIn/fetchMeta/fetchYoutube, rechtstreeks de LinkedIn/Meta/
+      // Google Ads API). Zonder deze filter plus de merge hieronder (i.p.v. vervangen) kon deze
+      // fetch, als hij ná die andere fetches afrondde, de net opgehaalde dag-rijen weer
+      // overschrijven met de verouderde Sheets-versie (die voor Meta bovendien alleen april-juni
+      // 2026 dekt, niet de huidige periode) — de oorzaak van de lege dag-grafieken in Kanalen
+      // ondanks correcte API-data.
+      const LIVE_PLATFORMS = ['linkedin', 'meta', 'youtube'] as const;
       const campaignsAll: CampaignRow[] = await campaignsRes.json();
-      const campaigns = campaignsAll.filter((r) => r.platform !== 'linkedin' && r.platform !== 'meta');
+      const campaigns = campaignsAll.filter((r) => !LIVE_PLATFORMS.includes(r.platform as typeof LIVE_PLATFORMS[number]));
       const google: CampaignRow[] = googleRes.ok ? await googleRes.json() : [];
-      setRows((prev) => [...prev.filter((r) => r.platform === 'linkedin' || r.platform === 'meta'), ...campaigns, ...google]);
+      setRows((prev) => [...prev.filter((r) => LIVE_PLATFORMS.includes(r.platform as typeof LIVE_PLATFORMS[number])), ...campaigns, ...google]);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unknown error');
     } finally {
@@ -273,6 +275,32 @@ export default function DashboardPage() {
 
   useEffect(() => { if (hasLoadedPersisted) fetchMeta(); }, [hasLoadedPersisted, fetchMeta]);
 
+  // YouTube is nu ook live gekoppeld (/api/youtube/campaigns, rechtstreeks de Google Ads API — zie
+  // lib/googleads.ts), gescopet op precies de 3 bekende VIDEO-campagnes. Zelfde patroon als
+  // fetchLinkedIn/fetchMeta.
+  const [youtubeStatus, setYoutubeStatus] = useState<'idle' | 'loading' | 'error'>('idle');
+  const [youtubeError, setYoutubeError] = useState<string | null>(null);
+
+  const fetchYoutube = useCallback(async () => {
+    setYoutubeStatus('loading');
+    setYoutubeError(null);
+    try {
+      const res = await fetch('/api/youtube/campaigns');
+      const data = await res.json() as { achieved?: Record<string, ChannelResultRow['achieved']>; daily?: CampaignRow[]; error?: string };
+      if (!res.ok) throw new Error(data.error ?? `HTTP ${res.status}`);
+      setResultRows((prev) => applyAchievedByLabel(prev, 'YouTube', data.achieved ?? {}));
+      const daily = data.daily ?? [];
+      const freshLabels = new Set(daily.map((d) => d.campaign_name));
+      setRows((prev) => [...prev.filter((r) => !(r.platform === 'youtube' && freshLabels.has(r.campaign_name))), ...daily]);
+      setYoutubeStatus('idle');
+    } catch (err) {
+      setYoutubeStatus('error');
+      setYoutubeError(err instanceof Error ? err.message : 'Onbekende fout bij het laden van YouTube-data');
+    }
+  }, []);
+
+  useEffect(() => { if (hasLoadedPersisted) fetchYoutube(); }, [hasLoadedPersisted, fetchYoutube]);
+
   useEffect(() => { if (hasLoadedPersisted) localStorage.setItem('tey_results_rows_v9', JSON.stringify(resultRows)); }, [resultRows, hasLoadedPersisted]);
   useEffect(() => { if (hasLoadedPersisted) localStorage.setItem('tey_pacing_v9', JSON.stringify(pacing)); }, [pacing, hasLoadedPersisted]);
   useEffect(() => { if (hasLoadedPersisted) localStorage.setItem('tey_metric_pairs_v9', JSON.stringify(metricPairs)); }, [metricPairs, hasLoadedPersisted]);
@@ -338,7 +366,7 @@ export default function DashboardPage() {
           {/* Vernieuwen — right */}
           <div className="flex justify-end">
             <button
-              onClick={() => { fetchData(); fetchLinkedIn(); fetchMeta(); }}
+              onClick={() => { fetchData(); fetchLinkedIn(); fetchMeta(); fetchYoutube(); }}
               disabled={loading}
               className="text-sm font-semibold disabled:opacity-40 transition-colors px-5 py-2 rounded-lg"
               style={{ background: '#1E3A8A', color: '#ffffff' }}
@@ -373,6 +401,13 @@ export default function DashboardPage() {
           <div className="mb-6 text-sm px-4 py-3 rounded-lg" style={{ background: '#FEF2F2', color: '#B42318', border: '1px solid #FCA5A5' }}>
             Meta: {metaError}
             <button onClick={fetchMeta} className="ml-2 font-semibold underline">Opnieuw proberen</button>
+          </div>
+        )}
+
+        {youtubeStatus === 'error' && (
+          <div className="mb-6 text-sm px-4 py-3 rounded-lg" style={{ background: '#FEF2F2', color: '#B42318', border: '1px solid #FCA5A5' }}>
+            YouTube: {youtubeError}
+            <button onClick={fetchYoutube} className="ml-2 font-semibold underline">Opnieuw proberen</button>
           </div>
         )}
 
