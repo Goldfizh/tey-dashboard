@@ -175,15 +175,24 @@ export default function DashboardPage() {
     try {
       const savedRows = localStorage.getItem('tey_results_rows_v9');
       // Eerste bezoek (nog niks opgeslagen): start met de KPI-targets uit buildSeedKpiRows()
-      // i.p.v. een lege tabel. Bij een bestaand bezoek: campagnes die ná dat eerste bezoek aan
-      // SEED_KPI_ROWS zijn toegevoegd (bv. Vacatures/Informatieavond, 2026-10-23) staan nog niet
-      // in de opgeslagen array — die missende rijen alsnog toevoegen, zonder de bestaande rijen
-      // (met eventuele handmatige KPI-aanpassingen/opmerkingen) aan te raken.
+      // i.p.v. een lege tabel. Bij een bestaand bezoek: seedKpiTargets.ts (niet de localStorage-
+      // kopie) is de bron van waarheid voor kpi/activePairKeys — elk bezoek wordt `kpi` dus
+      // ververst naar de laatste code-waarden (bv. de decembertoevoeging op 2026-11-27), zodat een
+      // budget-ophoging altijd doorkomt, ook bij bezoekers met al een opgeslagen versie. `achieved`
+      // (komt toch van de live fetch) en `comments` van bestaande rijen blijven staan; rijen die
+      // ná het laatste bezoek aan SEED_KPI_ROWS zijn toegevoegd worden aangevuld; rijen die de
+      // gebruiker zelf via "+ Rij toevoegen" heeft aangemaakt (geen match in de seed) blijven
+      // ongemoeid.
       if (savedRows) {
         const existing = JSON.parse(savedRows) as ChannelResultRow[];
+        const freshById = new Map(buildSeedKpiRows().map((r) => [r.id, r]));
+        const refreshed = existing.map((r) => {
+          const fresh = freshById.get(r.id);
+          return fresh ? { ...r, kpi: fresh.kpi, activePairKeys: fresh.activePairKeys } : r;
+        });
         const existingIds = new Set(existing.map((r) => r.id));
         const newRows = buildSeedKpiRows().filter((r) => !existingIds.has(r.id));
-        setResultRows(newRows.length > 0 ? [...existing, ...newRows] : existing);
+        setResultRows(newRows.length > 0 ? [...refreshed, ...newRows] : refreshed);
       } else {
         setResultRows(buildSeedKpiRows());
       }
