@@ -188,7 +188,13 @@ export default function DashboardPage() {
         setResultRows(buildSeedKpiRows());
       }
       const savedPacing = localStorage.getItem('tey_pacing_v9');
-      if (savedPacing) setPacing(JSON.parse(savedPacing) as Pacing);
+      if (savedPacing) {
+        const parsed = JSON.parse(savedPacing) as Pacing;
+        // De flight is op 2026-11-27 verlengd tot en met december (was t/m 30 nov) — een al
+        // opgeslagen einddatum die nog op de oude default staat, meeschuiven naar de nieuwe.
+        if (parsed.endDate === '2026-11-30') parsed.endDate = '2026-12-31';
+        setPacing(parsed);
+      }
       const savedMetrics = localStorage.getItem('tey_metric_pairs_v9');
       if (savedMetrics) setMetricPairs(JSON.parse(savedMetrics) as MetricPairDef[]);
     } catch { /* ignore */ }
