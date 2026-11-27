@@ -167,7 +167,7 @@ export default function DashboardPage() {
   // Volledig handmatig samengesteld (zie buildSeedKpiRows in lib/seedKpiTargets.ts) — geen
   // automatische koppeling met /api/campaigns, zie de toelichting verderop in dit bestand.
   const [resultRows, setResultRows] = useState<ChannelResultRow[]>([]);
-  const [pacing, setPacing] = useState<Pacing>({ startDate: '2026-10-01', endDate: '2026-11-30' });
+  const [pacing, setPacing] = useState<Pacing>({ startDate: '2026-10-01', endDate: '2026-12-31' });
   const [metricPairs, setMetricPairs] = useState<MetricPairDef[]>(DEFAULT_METRIC_PAIRS);
   const [hasLoadedPersisted, setHasLoadedPersisted] = useState(false);
 

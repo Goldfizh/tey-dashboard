@@ -32,6 +32,7 @@ export const LINKEDIN_CAMPAIGNS: Record<string, string> = {
   'Extra video': '584808854',          // Wervingscampagne 2026 - Interactie - Extra video's (klikken)
   'Persoonlijke verhalen': '901424154', // Medewerkers verhalen — 4e advertentieset onder campagnegroep "Employer branding klikken" (757030574)
   'Informatieavond': '906257954',      // Wervingscampagne 2026 - Verkeer - Informatieavond — toegevoegd op 2026-11-16
+  'Doorgroeimogelijkheden': '911314884', // Verkeer — toegevoegd op 2026-11-27
 };
 
 // Meta-advertentieaccount van Teylingereind: 913728597234821 ("Forensisch Centrum
@@ -46,6 +47,7 @@ export const META_CAMPAIGNS: Record<string, string> = {
   'Persoonlijke verhalen': '120251198804710642', // Employer Branding 2026 | Verkeer | Medewerkersverhalen | Always on
   'Vacatures': '120241528532830642',             // Teylingereind | Vacatures | Always on
   'Informatieavond': '120223179012160642',       // Teylingereind | Informatieavond | Always on
+  'Doorgroeimogelijkheden': '120252186575610642', // Employer Branding 2026 | Verkeer | Doorgroeimogelijkheden | Always on — toegevoegd op 2026-11-27
 };
 
 // LinkedIn en Meta: beide live gekoppeld via hun eigen /api/*/campaigns-route (lib/linkedin.ts,
@@ -68,37 +70,45 @@ interface SeedKpiRow {
 // De 3 Meta-videocampagnes (EB video/Extra video/Skill video) hebben naast hun CPCV-doel óók een
 // CPC-doel ontvangen (2026-10-09) — zonder die target bleven hun échte clicks buiten de Clicks/
 // CPC-kolommen en dus buiten de opgetelde Totaalresultaten vallen, wat dat totaalbeeld vertekende.
+//
+// Budgetten op 2026-11-27 opgehoogd: de flight loopt nu ook door in december (zie FLIGHT_END in
+// app/page.tsx en de /api/*-routes), en alle bestaande campagnes kregen daarvoor een extra stuk
+// budget bovenop hun bestaande KPI-target (geen vervanging, dus hieronder al opgeteld).
 
 const SEED_KPI_ROWS: SeedKpiRow[] = [
   // ── Naamsbekendheid ──
-  { platform: 'linkedin', campagne: 'EB video', spend: 775, cpm: 18.07, frequency: 4, cpc: 5.27 },
-  { platform: 'meta',     campagne: 'EB video', spend: 965, cpm: 5.50,  frequency: 4, cpcv: 0.15, cpc: 5.45 },
-  { platform: 'youtube',  campagne: 'EB video', spend: 650, cpm: 4.64,  frequency: 4, cpcv: 0.009 },
+  { platform: 'linkedin', campagne: 'EB video', spend: 1163, cpm: 18.07, frequency: 4, cpc: 5.27 },
+  { platform: 'meta',     campagne: 'EB video', spend: 1448, cpm: 5.50,  frequency: 4, cpcv: 0.15, cpc: 5.45 },
+  { platform: 'youtube',  campagne: 'EB video', spend: 975,  cpm: 4.64,  frequency: 4, cpcv: 0.009 },
 
   // ── Interactie ──
-  { platform: 'linkedin', campagne: 'Extra video', spend: 900,  cpm: 18.07, frequency: 4, cpc: 5.27 },
-  { platform: 'meta',     campagne: 'Extra video', spend: 1050, cpm: 5.05,  frequency: 4, cpcv: 0.19, cpc: 2.69 },
-  { platform: 'youtube',  campagne: 'Extra video', spend: 590,  cpm: 4.37,  frequency: 4, cpcv: 0.007 },
+  { platform: 'linkedin', campagne: 'Extra video', spend: 1240, cpm: 18.07, frequency: 4, cpc: 5.27 },
+  { platform: 'meta',     campagne: 'Extra video', spend: 1570, cpm: 5.05,  frequency: 4, cpcv: 0.19, cpc: 2.69 },
+  { platform: 'youtube',  campagne: 'Extra video', spend: 885,  cpm: 4.37,  frequency: 4, cpcv: 0.007 },
 
-  { platform: 'linkedin', campagne: 'Skill video', spend: 1040, cpm: 16.83, frequency: 4, cpc: 4.91 },
-  { platform: 'meta',     campagne: 'Skill video', spend: 950,  cpm: 5.64,  frequency: 4, cpcv: 0.22, cpc: 4.88 },
-  { platform: 'youtube',  campagne: 'Skill video', spend: 450,  cpm: 2.19,  frequency: 0, cpcv: 0.13 }, // YouTube Shorts — frequentie niet opgegeven in het mediaplan
+  { platform: 'linkedin', campagne: 'Skill video', spend: 1515, cpm: 16.83, frequency: 4, cpc: 4.91 },
+  { platform: 'meta',     campagne: 'Skill video', spend: 1470, cpm: 5.64,  frequency: 4, cpcv: 0.22, cpc: 4.88 },
+  { platform: 'youtube',  campagne: 'Skill video', spend: 675,  cpm: 2.19,  frequency: 0, cpcv: 0.13 }, // YouTube Shorts — frequentie niet opgegeven in het mediaplan
 
   // ── Verkeer ──
-  { platform: 'meta', campagne: 'Persoonlijke verhalen', spend: 845, cpm: 9.00, frequency: 4, cpc: 0.45 },
+  { platform: 'meta', campagne: 'Persoonlijke verhalen', spend: 1311, cpm: 9.00, frequency: 4, cpc: 0.45 },
   // LinkedIn "Persoonlijke verhalen" (Medewerkers verhalen, id 901424154) — KPI-target ontvangen op 2026-10-09.
-  { platform: 'linkedin', campagne: 'Persoonlijke verhalen', spend: 845, cpm: 20.00, frequency: 4, cpc: 4.50 },
+  { platform: 'linkedin', campagne: 'Persoonlijke verhalen', spend: 1245, cpm: 20.00, frequency: 4, cpc: 4.50 },
   // LinkedIn "Informatieavond" (Wervingscampagne 2026 - Verkeer - Informatieavond, id 906257954)
   // — toegevoegd op 2026-11-16. Zelfde cpm/cpc als de andere Verkeer-campagne op LinkedIn
   // (Persoonlijke verhalen hierboven) — geen eigen KPI's opgegeven, alleen budget.
-  { platform: 'linkedin', campagne: 'Informatieavond', spend: 485, cpm: 20.00, frequency: 4, cpc: 4.50 },
+  { platform: 'linkedin', campagne: 'Informatieavond', spend: 728, cpm: 20.00, frequency: 4, cpc: 4.50 },
+  // "Doorgroeimogelijkheden" — nieuwe Verkeer-campagne op beide kanalen, toegevoegd op 2026-11-27
+  // (zie LINKEDIN_CAMPAIGNS/META_CAMPAIGNS). Eigen cpm/cpc, geen cpcv/cpa opgegeven.
+  { platform: 'linkedin', campagne: 'Doorgroeimogelijkheden', spend: 500, cpm: 29.87, frequency: 4, cpc: 7.45 },
+  { platform: 'meta',     campagne: 'Doorgroeimogelijkheden', spend: 566, cpm: 9.00,  frequency: 4, cpc: 0.45 },
 
   // ── Leads (always-on wervingscampagnes, los van het Q4-mediaplan hierboven) ──
-  // Toegevoegd op 2026-10-23. Beide zijn Meta OUTCOME_LEADS-campagnes; "Cost per lead" is Meta's
-  // eigen "sollicitatie voltooid"-resultaat (zie submitApplicationConversions in lib/meta.ts voor
-  // hoe dat afgeleid wordt). Frequentie niet opgegeven — blijft op 0 (Bereik dus niet afgeleid).
-  { platform: 'meta', campagne: 'Informatieavond', spend: 5000, cpm: 12.49, frequency: 0, cpc: 1.16, cpa: 206.17 },
-  { platform: 'meta', campagne: 'Vacatures',       spend: 1000, cpm: 11.21, frequency: 0, cpc: 1.21, cpa: 83.38 },
+  // Toegevoegd op 2026-10-23. Beide zijn Meta OUTCOME_LEADS-campagnes; "Cost per lead" is het
+  // juiste custom-conversion-event per campagne (zie LEAD_EVENT_BY_CAMPAIGN in lib/meta.ts).
+  // Frequentie niet opgegeven — blijft op 0 (Bereik dus niet afgeleid).
+  { platform: 'meta', campagne: 'Informatieavond', spend: 7500, cpm: 12.49, frequency: 0, cpc: 1.16, cpa: 206.17 },
+  { platform: 'meta', campagne: 'Vacatures',       spend: 1500, cpm: 11.21, frequency: 0, cpc: 1.21, cpa: 83.38 },
 ];
 
 export function buildSeedKpiRows(): ChannelResultRow[] {

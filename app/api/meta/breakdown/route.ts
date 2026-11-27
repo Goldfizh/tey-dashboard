@@ -15,7 +15,7 @@ export async function GET(req: NextRequest) {
     const level = searchParams.get('level') === 'ad' ? 'ad' : 'adset';
     const campagneParam = searchParams.get('campagnes');
     const startDate = searchParams.get('startDate') ?? '2026-10-01';
-    const endDate = searchParams.get('endDate') ?? '2026-11-30';
+    const endDate = searchParams.get('endDate') ?? '2026-12-31';
     const start = new Date(`${startDate}T00:00:00Z`);
     const end = new Date(`${endDate}T00:00:00Z`);
 
